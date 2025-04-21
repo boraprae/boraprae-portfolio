@@ -1,95 +1,44 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import "nes.css/css/nes.min.css";
+import "tailwindcss";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    // <div className={styles.page}>
+    <div className="">
+      {/* 🔹 Row แรก */}
+      <div className="flex flex-col gap-6">
+        {/* ✅ Row แรก */}
+        <div className="nes-container is-dark is-rounded">
+          <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* ✅ Row ที่สอง */}
+        <div className="flex flex-row w-full gap-4">
+          {/* 🟦 คอลัมน์ซ้าย - 40% */}
+          <div className="w-2/5">
+            <div className="nes-container is-dark with-title w-full">
+              <Image
+                src="/asset/pixcel-profile.jpg"
+                alt="Profile Image"
+                width={200}
+                height={200}
+                className="rounded-full object-cover mx-auto"
+              />
+            </div>
+            <p className="text-lg text-center mt-2">Yainezu</p>
+          </div>
+
+          {/* 🟥 คอลัมน์ขวา - 60% */}
+          <div className="w-3/5 flex flex-col justify-center">
+            <p className="text-xl font-bold">SOFTWARE ENGINEER</p>
+            <p className="mt-2 text-base">
+              Frontend dev who loves pixel art and retro design.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
