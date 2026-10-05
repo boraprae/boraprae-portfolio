@@ -14,11 +14,19 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3200](http://localhost:3200) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The page is in `src/app/page.tsx`. The development server updates the preview as files change.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Portfolio content and scenes
+
+- `src/data/portfolio.ts` contains the profile, eight chapters, experience, projects, education, and contact links. Unknown career details are intentionally empty; add verified CV content here.
+- `src/components/workspace-world.tsx` builds the Three.js studio and camera timeline. Each chapter has a reading interval between camera movements. Scene geometry and textures are generated locally; no external 3D assets are needed.
+- `src/app/globals.css` controls the responsive layout and scroll distance: 4800svh on desktop, 5200svh on mobile. Reading intervals hold a fixed camera pose, and chapter-button transitions take 2–3.2 seconds; manual scrolling interrupts them.
+- The palette references work-burn-dashboard’s cozy-paper tokens: paper `#fcfbf6`, ink `#433f35`, sage `#8d9c75`, forest `#426653`, and warm wood/terracotta.
+- “Read résumé” provides a continuous text view. The scene supports reduced motion, a manual motion toggle, and an illustrated fallback when WebGL is unavailable.
+
+Validate with `pnpm lint` and `pnpm build`. To preview on a spare port, use `pnpm dev --port 3002` without stopping another app.
 
 ## Learn More
 
