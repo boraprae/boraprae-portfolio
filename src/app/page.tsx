@@ -1,56 +1,101 @@
-import { education, experience, profile, projects } from "@/data/portfolio";
+import Image from "next/image";
+import EditorialMotion from "@/components/editorial-motion";
+import PortfolioDesktop, { PlayfulShape } from "@/components/portfolio-desktop";
+import { profile } from "@/data/portfolio";
 import s from "./editorial.module.css";
 
-const process = [
-  ["Understand", "Start with the person.", "A useful interface begins with a clear problem, a little listening, and the right questions."],
-  ["Explore", "Make room for curiosity.", "Sketch the possibilities. Try an interaction. Find the small detail that makes an idea feel right."],
-  ["Build", "Give the idea a life.", "Connect the visual layer to thoughtful components, responsive layouts, and clear, maintainable code."],
-  ["Refine", "Keep making it better.", "Use it. Check the edges. Slow down where it matters. There is always another detail worth caring about."],
+const steps = [
+  { name: "Understand", accent: "& discover", text: "Start with the person, the problem, and the questions worth asking. Give the idea a clear direction." },
+  { name: "Explore", accent: "& experiment", text: "Sketch the possibilities. Try an interaction. Find the detail that makes something feel right." },
+  { name: "Build", accent: "& connect", text: "Bring the pieces together with thoughtful components, responsive layouts, and maintainable code." },
+  { name: "Refine", accent: "& care", text: "Use it. Check the edges. Listen, learn, and keep making the experience a little better." },
 ];
-function Flower({ className = "" }: { className?: string }) {
-  return <svg className={className} viewBox="0 0 200 200" fill="currentColor" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <ellipse key={i} cx="100" cy="57" rx="27" ry="49" transform={`rotate(${i * 45} 100 100)`} />)}<circle cx="100" cy="100" r="21" fill="var(--paper)" /></svg>;
+
+function Wordmark({ compact = false }: { compact?: boolean }) {
+  return <svg className={compact ? s.miniWordmark : s.wordmark} viewBox="0 0 1000 164" role="img" aria-label="Yainezu"><text x="0" y="150" textLength="990" lengthAdjust="spacingAndGlyphs">YAINEZU</text><path d="M165 12l-15 131M640 14l14 130" stroke="var(--paper)" strokeWidth="5"/></svg>;
 }
-function Landscape() {
-  return <svg viewBox="0 0 600 380" role="img" aria-label="An illustrated landscape of warm sunshine and green rolling hills"><rect width="600" height="380" fill="#e7d6bd"/><circle cx="420" cy="100" r="43" fill="#fcfbf6"/><path d="M0 255Q110 40 290 225T600 175V380H0Z" fill="#8d9c75"/><path d="M0 300Q190 150 360 285T600 260V380H0Z" fill="#687c58"/><path d="M0 340Q220 235 600 350V380H0Z" fill="#426653"/><path d="M290 380Q420 285 330 252Q285 225 326 204" fill="none" stroke="#e7d6bd" strokeWidth="13"/></svg>;
+function Star({ className = "" }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 200 200" aria-hidden="true"><path fill="currentColor" d="m100 0 18 58 53-29-29 53 58 18-58 18 29 53-53-29-18 58-18-58-53 29 29-53L0 100l58-18-29-53 53 29Z"/></svg>;
 }
+function StudyInterface({ small = false }: { small?: boolean }) {
+  return <div className={`${s.studyInterface} ${small ? s.smallInterface : ""}`}><div className={s.studyNav}><b>little things®</b><span>Today &nbsp; / &nbsp; My space</span><span>✳</span></div><div className={s.studyBody}><span className={s.micro}>MAKE SPACE FOR WHAT MATTERS.</span><h3>A gentler way<br/>to get <em>things done.</em></h3><div className={s.studyWidgets}><div><span>THIS WEEK</span><b>Make something<br/>you care about.</b><div className={s.bars}>{[35,60,45,80,65,95,75].map((h,i)=><i key={i} style={{height:`${h}%`}}/>)}</div></div><div><span>YOUR DAILY PAUSE</span><Star/><p>One thing at a time.</p></div></div></div></div>;
+}
+
 export default function Home() {
-  return <main className={s.page} id="top">
+  return <EditorialMotion className={s.page}>
     <a href="#about" className={s.skip}>Skip to content</a>
-    <header className={s.header}>
-      <a href="#top" className={s.wordmark} aria-label={`${profile.name} home`}>YAINEZU<span>✳</span></a>
-      <div className={s.navline}><span>Software engineer & curious human</span><nav aria-label="Main navigation"><a href="#about">About</a><a href="#work">Work</a><a href="#notebook">Notebook</a><a href="#contact">Say hello ↗</a></nav></div>
+    <header className={s.fixedNav}>
+      <a href="#top" className={s.navBrand} aria-label="Yainezu home"><Wordmark compact/></a>
+      <nav aria-label="Main navigation"><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav>
+      <button data-motion-toggle aria-pressed="false" className={s.motionToggle}>Pause motion</button>
     </header>
-    <section className={s.hero} aria-labelledby="intro">
-      <div className={s.heroNote}><span className={s.spark}>✳</span><p>A personal corner<br/>of the internet.</p></div>
-      <h1 id="intro">A little code.<br/>A lot of care.<br/><em>A world of possibilities.</em></h1>
-      <div className={s.meta}><span>PORTFOLIO / VOL. 02</span><a href="#work">SCROLL TO EXPLORE ↓</a><span>● ALWAYS CURIOUS</span></div>
+    <section className={s.hero} data-scene="hero">
+      <div className={s.bigBrand}><Wordmark/></div>
+      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><span><em>A little corner of the internet.</em></span></div>
+      <h1>I build things for<br/>people who care<br/><em>about the little things.</em></h1>
+      <div className={s.heroMeta}><span>BASED IN CURIOSITY<br/>BUILT WITH CARE</span><a href="#reel">SCROLL TO EXPLORE ↓</a><span>▪ ALWAYS BECOMING</span></div>
     </section>
-    <section className={s.collage} aria-label="A collection of code, landscapes, and creative experiments">
-      <div className={s.gridLines} aria-hidden="true"/>
-      <div className={s.landscape}><div className={s.windowBar}><span>somewhere-nice.png</span><span>− □ ×</span></div><Landscape/><span className={s.imageLabel}>A LITTLE SPACE TO THINK.</span></div>
-      <div className={s.codeCard}><div className={s.windowBar}>hello.tsx <span>↗</span></div><pre><span>const</span>{' developer = {\n  name: "Yainezu",\n  loves: [\n    "thoughtful interfaces",\n    "small details",\n    "a good cup of coffee"\n  ],\n  curiosity: Infinity\n};'}</pre></div>
-      <div className={s.note}>Made with<br/><em>intention.</em><span>AND A LITTLE TRIAL & ERROR.</span></div>
-      <Flower className={s.flower}/><span className={s.collageLabel}>IDEAS IN PROGRESS ↗</span>
-      <a href="/studio" className={s.studioLink}>Step inside my 3D workspace <span>↗</span></a>
+
+    <section className={s.reelTrack} id="reel" data-scene="reel" aria-label="A moving collection of interfaces and studio artwork">
+      <div className={s.reelSticky}>
+        <div className={s.reelFrame}>
+          <div className={s.reelWorld}>
+            <div className={s.reelPhoto}><Image src="/images/editorial/studio-editorial.png" alt="A generated studio study of a woman working with her laptop" fill sizes="(max-width: 750px) 90vw, 70vw" priority/></div>
+            <div className={s.reelUI}><StudyInterface small/></div>
+            <div className={s.reelType}><span>THOUGHTFULLY MADE.</span><p>A little<br/><em>human.</em></p><Star/></div>
+            <div className={s.reelCode}><span>hello.tsx</span><pre>{'const curiosity = Infinity;\n\nfunction create(idea) {\n  return care + code;\n}'}</pre><span>IDEAS → INTERFACES</span></div>
+            <div className={s.reelWallpaper}><Image src="/images/editorial/meadow-wallpaper.png" alt="" fill sizes="35vw"/><span>A LITTLE ROOM TO THINK.</span></div>
+            <div className={s.reelStamp}><Star/><span>CRAFTED WITH CURIOSITY</span></div>
+          </div>
+          <div className={s.reelCaption}><span>YAINEZU / SELECTED EXPLORATIONS</span><span>CODE. CRAFT. CURIOSITY.</span></div>
+        </div>
+      </div>
     </section>
-    <div className={s.equation}><span>CURIOSITY</span><i>+</i><span>CODE</span><i>+</i><span>CRAFT</span><i>=</i><em>Something meaningful.</em></div>
-    <section id="about" className={s.about}>
-      <div className={s.sectionLabel}>01 / THE PERSON BEHIND THE SCREEN</div>
-      <h2>I like making things<br/>that work beautifully.<br/><em>And feel a little human.</em></h2>
-      <div className={s.aboutBottom}><div className={s.signature}>Hello, I’m {profile.name}. <span>↗</span></div><div><p>{profile.introduction}</p><p>This is where I collect the things I build, the details I notice, and the ideas I’m still figuring out.</p></div></div>
+    <div className={s.equation}><span>DESIGN</span><span>+</span><span>ENGINEERING</span><span>+</span><span>CURIOSITY</span><span>=</span><span>FULL CIRCLE</span></div>
+
+    <section className={s.about} id="about" data-scene="reveal">
+      <h2>Good software is more<br/>than what’s on a screen.<br/><em>It’s the small things<br/>that make it feel human.</em></h2>
+      <div className={s.aboutPhoto}><Image src="/images/editorial/studio-editorial.png" alt="A warm studio, imagined in our cozy palette" width={900} height={506}/><span className={s.micro}>AN IMAGINED STUDIO / GENERATED ARTWORK</span></div>
+      <p className={s.aboutCopy}>{profile.introduction}<br/><em>A curious mind → a thoughtful interface.</em></p>
+      <h2 className={s.aboutSecond}>First, a little curiosity.<br/>Then, a little code.<br/><em>And a lot of care<br/>along the way.</em></h2>
     </section>
-    <section id="process" className={s.process}>
-      <div className={s.processIntro}><span className={s.sectionLabel}>02 / HOW I THINK</span><h2>From a<br/>small idea<br/><em>to a real thing.</em></h2><div className={s.path}>A <span>⤳</span> B</div><p>Good work takes a few turns.<br/>That’s part of the process.</p></div>
-      <div>{process.map(([label, title, body], i) => <article className={s.processStep} key={label}><span className={s.sectionLabel}>0{i + 1} / {label.toUpperCase()}</span><h3>{title}</h3><p>{body}</p></article>)}</div>
+
+    <section className={s.processTrack} id="process" data-scene="process" aria-label="My process">
+      <div className={s.processStage}>
+        <div className={s.sceneTopline}><span className={s.ab}>A <span>→</span> B</span><p>The path is rarely a straight line.<br/>That’s where <em>the good things happen.</em></p><span className={s.oval}>My process</span></div>
+        <div className={s.processCards}>{steps.map((step,i)=><article className={s.processCard} key={step.name} data-process-card style={{"--card-index":i} as React.CSSProperties}>
+          <span className={s.processNumber}>0{i+1}</span><svg className={s.processDrawing} viewBox="0 0 320 240" fill="none" aria-hidden="true"><path d="M-20 170Q40 80 110 170Q160 220 210 130Q270 20 340 125" stroke="currentColor"/><path d="M0 75H320" stroke="currentColor" strokeDasharray="4 6"/><rect x="102" y="40" width="95" height="95" stroke="currentColor" transform={`rotate(${i*18+15} 150 88)`}/></svg>
+          <div><h3>{step.name}<br/><em>{step.accent}</em></h3><p>{step.text}</p></div>
+        </article>)}</div>
+      </div>
     </section>
-    <section className={s.work} id="work"><div className={s.workHeading}><div><span className={s.sectionLabel}>03 / IDEAS INTO REALITY</span><h2>Selected<br/><em>work.</em></h2></div><p>A small collection of things<br/>I’m bringing to life.<br/>Built with curiosity. Refined with care.</p></div>
-      {projects.map((project, i) => <article key={project.name} className={s.project}><a className={s.projectPreview} href={project.url || "/studio"} aria-label={`Explore ${project.name}`}><div className={s.miniBrowser}><div className={s.windowBar}><span>● ● ●</span><span>yainezu / studio</span><span>↗</span></div><div className={s.miniContent}><span>A PERSONAL WORKSPACE</span><h3>A little code.<br/><em>A world of<br/>possibilities.</em></h3><div className={s.deskIcon} aria-hidden="true"><div className={s.monitor}>{"</>"}</div><div className={s.desk}/><div className={s.cup}/></div></div></div><span className={s.roundLink}>EXPLORE<br/>↗</span></a><div className={s.projectInfo}><h3>0{i + 1}. {project.name}</h3><span>{project.stack.join(" / ")}</span></div><p>{project.summary}</p></article>)}
+
+    <section className={s.workTrack} id="work" data-scene="work" aria-label="Selected work and personal explorations">
+      <div className={s.workStage}>
+        <div className={s.workHeading}><h2>Selected<br/><em>work.</em></h2><p>Little worlds, thoughtful interfaces,<br/>and a few ideas in the making.<br/><em>Always a little room for curiosity.</em></p></div>
+        <div className={s.workBody}><div className={s.workIndex} aria-label="Choose a project">
+          {[['A little world','Next.js, React, Three.js'],['Little things','Interface concept'],['Somewhere quiet','Visual exploration']].map(([name,type],i)=><button key={name} data-work-jump={i} aria-current={i===0?"true":undefined}><span>0{i+1}.</span><span>{name}<small>{type}</small></span><span>↗</span></button>)}
+          <span className={s.workHint}>SCROLL TO TURN THE PAGE ↓</span>
+        </div><div className={s.workPanels}>
+          <article className={`${s.workPanel} ${s.studioProject}`} data-work-panel><Image src="/images/editorial/studio-editorial.png" alt="Warm studio artwork for the interactive workspace portfolio" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.projectOverlay}><span className={s.micro}>01 / PERSONAL PORTFOLIO</span><h3>A little world<br/><em>of my own.</em></h3><a href="/studio" className={s.circleLink}>EXPLORE<br/>THE STUDIO<br/><b>↗</b></a></div></article>
+          <article className={`${s.workPanel} ${s.interfaceProject}`} data-work-panel><StudyInterface/><span className={s.conceptLabel}>02 / INTERFACE STUDY — A PERSONAL DESIGN EXPLORATION</span></article>
+          <article className={`${s.workPanel} ${s.landscapeProject}`} data-work-panel><Image src="/images/editorial/meadow-wallpaper.png" alt="A generated landscape study of sage green hills" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.landscapeTitle}><span className={s.micro}>03 / VISUAL EXPLORATION</span><h3>Somewhere<br/><em>quiet.</em></h3><span>A LITTLE SPACE TO THINK.</span></div></article>
+        </div></div>
+      </div>
     </section>
-    <section id="notebook" className={s.notebook}><div className={s.sectionLabel}>04 / NOTES FROM MY DESKTOP</div><h2>Still curious.<br/><em>Still becoming.</em></h2><div className={s.desktop}>
-      <article className={s.readme}><div className={s.windowBar}><span>readme.md</span><span>− □ ×</span></div><div className={s.readmeBody}><span># A little about me</span><h3>Some things<br/>behind the code.</h3><details open><summary>01 — What I’m drawn to</summary><p>The place where engineering meets visual storytelling. Interfaces that are clear, useful, and have a little personality.</p></details><details><summary>02 — What’s in this portfolio?</summary><p>A Next.js and TypeScript website, an interactive Three.js workspace, and an ongoing exploration of motion and design.</p></details><details><summary>03 — Beyond the screen</summary><p>Pixel art, retro design, and the small things that spark a new idea.</p></details></div></article>
-      <div className={s.desktopAside}><Flower className={s.desktopFlower}/><div className={s.fileIcon}>TS<span>TypeScript</span></div><div className={s.ticket}><span>PERSONAL FIELD NOTES</span><p>Stay curious.<br/>Make things.<br/><em>Care about them.</em></p><span>YAINEZU / ALWAYS IN PROGRESS</span></div></div>
-    </div></section>
-    {(experience.length > 0 || education.length > 0) && <section className={s.about} id="journey"><span className={s.sectionLabel}>THE JOURNEY SO FAR</span>{experience.map(item => <article key={`${item.company}-${item.period}`}><h3>{item.role} / {item.company}</h3><p>{item.period}</p><p>{item.summary}</p><ul>{item.highlights.map(h => <li key={h}>{h}</li>)}</ul></article>)}{education.map(item => <article key={`${item.institution}-${item.period}`}><h3>{item.title} / {item.institution}</h3><p>{item.period}</p><p>{item.summary}</p></article>)}</section>}
-    <footer className={s.footer} id="contact"><span className={s.sectionLabel}>THE NEXT CHAPTER</span><h2>Good things start<br/><em>with a little hello.</em></h2><div className={s.footerLinks}>{profile.email && <a href={`mailto:${profile.email}`}>Say hello ↗</a>}{profile.github && <a href={profile.github}>GitHub ↗</a>}{profile.linkedin && <a href={profile.linkedin}>LinkedIn ↗</a>}<a href="/studio">Visit my workspace ↗</a><a href="#top">Back to top ↑</a></div><div className={s.footerMark}>YAINEZU<Flower/></div><div className={s.meta}><span>SOFTWARE ENGINEER & CURIOUS HUMAN</span><span>A LITTLE CORNER OF THE INTERNET.</span></div></footer>
-  </main>;
+
+    <section className={s.computerTrack} id="desktop" data-scene="computer" aria-label="Explore my interactive desktop">
+      <div className={s.computerStage}>
+        <div className={s.computerIntro}><span className={s.micro}>A FEW THINGS BEHIND THE SCREEN</span><h2>Come a little<br/><em>closer.</em></h2><span>KEEP SCROLLING ↓</span></div>
+        <div className={s.monitorWrap}><Image src="/images/editorial/crt-sage.png" alt="Sage green retro computer displaying a peaceful landscape" width={1280} height={1280}/></div>
+        <div className={s.desktopReveal}><PortfolioDesktop/></div>
+        <div className={s.computerProgress} aria-hidden="true"><span/></div>
+      </div>
+    </section>
+
+    <footer className={s.footer} id="contact" data-scene="reveal">
+      <span className={s.micro}>THE NEXT CHAPTER</span><div className={s.contactGrid}><div><h2>Good things start<br/><em>with a little hello.</em></h2><p>That’s a little glimpse into my world.<br/>Thanks for taking the time to look around.<br/><em>This story is still being written.</em></p>{profile.email ? <a className={s.contactLink} href={`mailto:${profile.email}`}>[ LET’S TALK ↗ ]</a> : <a className={s.contactLink} href="/studio">[ STEP INSIDE MY STUDIO ↗ ]</a>}</div><PlayfulShape/></div>
+      <div className={s.footerLinks}><span>{profile.name} / Software engineer</span><nav aria-label="Footer navigation"><a href="#about">About</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#top">Back to top ↑</a></nav></div><Wordmark/>
+    </footer>
+  </EditorialMotion>;
 }
