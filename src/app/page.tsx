@@ -1,165 +1,56 @@
-"use client";
+import { education, experience, profile, projects } from "@/data/portfolio";
+import s from "./editorial.module.css";
 
-import { useEffect, useRef, useState } from "react";
-import WorkspaceWorld, { type WorldController } from "@/components/workspace-world";
-import { chapters, education, experience, profile, projects } from "@/data/portfolio";
-
-const clamp = (n: number) => Math.max(0, Math.min(1, n));
-function smooth(a: number, b: number, p: number) {
-  if (a === b) return p >= b ? 1 : 0;
-  const t = clamp((p - a) / (b - a));
-  return t * t * (3 - 2 * t);
+const process = [
+  ["Understand", "Start with the person.", "A useful interface begins with a clear problem, a little listening, and the right questions."],
+  ["Explore", "Make room for curiosity.", "Sketch the possibilities. Try an interaction. Find the small detail that makes an idea feel right."],
+  ["Build", "Give the idea a life.", "Connect the visual layer to thoughtful components, responsive layouts, and clear, maintainable code."],
+  ["Refine", "Keep making it better.", "Use it. Check the edges. Slow down where it matters. There is always another detail worth caring about."],
+];
+function Flower({ className = "" }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 200 200" fill="currentColor" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <ellipse key={i} cx="100" cy="57" rx="27" ry="49" transform={`rotate(${i * 45} 100 100)`} />)}<circle cx="100" cy="100" r="21" fill="var(--paper)" /></svg>;
 }
-type DetailView = "index" | "resume" | "project";
-
+function Landscape() {
+  return <svg viewBox="0 0 600 380" role="img" aria-label="An illustrated landscape of warm sunshine and green rolling hills"><rect width="600" height="380" fill="#e7d6bd"/><circle cx="420" cy="100" r="43" fill="#fcfbf6"/><path d="M0 255Q110 40 290 225T600 175V380H0Z" fill="#8d9c75"/><path d="M0 300Q190 150 360 285T600 260V380H0Z" fill="#687c58"/><path d="M0 340Q220 235 600 350V380H0Z" fill="#426653"/><path d="M290 380Q420 285 330 252Q285 225 326 204" fill="none" stroke="#e7d6bd" strokeWidth="13"/></svg>;
+}
 export default function Home() {
-  const journey = useRef<HTMLElement>(null);
-  const worldRef = useRef<WorldController | null>(null);
-  const captionsRef = useRef<(HTMLElement | null)[]>([]);
-  const [active, setActive] = useState(0);
-  const [quiet, setQuiet] = useState(false);
-  const [detail, setDetail] = useState<DetailView>("index");
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const quietRef = useRef(false);
-  const navigationFrameRef = useRef(0);
-
-  useEffect(() => {
-    const root = journey.current;
-    if (!root) return;
-    let frame = 0, current = 0, target = 0, previous = 0, activeIndex = 0;
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    function render(now: number) {
-      const reduced = preference.matches || quietRef.current;
-      const delta = Math.min(64, now - (previous || now)); previous = now;
-      current = reduced ? target : current + (target - current) * (1 - Math.exp(-delta / 140));
-      if (Math.abs(target - current) < .00008) current = target;
-      root!.style.setProperty("--progress", String(current));
-      worldRef.current?.setProgress(current, reduced);
-      let next = 0;
-      chapters.forEach((chapter, i) => { if (current >= chapter.range[0]) next = i; });
-      if (activeIndex !== next) { activeIndex = next; setActive(next); }
-      captionsRef.current.forEach((element, index) => {
-        if (!element) return;
-        const [enter, full, leave, gone] = chapters[index].range;
-        const opacity = reduced ? Number(index === next) : smooth(enter, full, current) * (index === chapters.length - 1 ? 1 : 1 - smooth(leave, gone, current));
-        element.style.opacity = String(opacity);
-        element.style.visibility = opacity < .01 ? "hidden" : "visible";
-        const distance = (1 - smooth(enter, full, current)) * 30 - smooth(leave, gone, current) * 24;
-        element.style.transform = reduced ? "none" : `translate3d(0,${distance}px,0)`;
-        element.inert = opacity < .6;
-        element.setAttribute("aria-hidden", String(opacity < .6));
-      });
-      frame = current !== target ? requestAnimationFrame(render) : 0;
-    }
-    function update() {
-      target = clamp(-root!.getBoundingClientRect().top / Math.max(1, root!.offsetHeight - window.innerHeight));
-      if (!frame) { previous = 0; frame = requestAnimationFrame(render); }
-    }
-    // Manual input always takes control of a chapter-button transition.
-    function cancelNavigation() {
-      cancelAnimationFrame(navigationFrameRef.current);
-      navigationFrameRef.current = 0;
-    }
-    update();
-    window.addEventListener("wheel", cancelNavigation, { passive: true });
-    window.addEventListener("touchstart", cancelNavigation, { passive: true });
-    window.addEventListener("pointerdown", cancelNavigation, { passive: true });
-    window.addEventListener("keydown", cancelNavigation);
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    window.addEventListener("portfolio-motion-change", update);
-    preference.addEventListener("change", update);
-    return () => {
-      cancelAnimationFrame(frame);
-      cancelNavigation();
-      window.removeEventListener("wheel", cancelNavigation);
-      window.removeEventListener("touchstart", cancelNavigation);
-      window.removeEventListener("pointerdown", cancelNavigation);
-      window.removeEventListener("keydown", cancelNavigation);
-      window.removeEventListener("scroll", update); window.removeEventListener("resize", update);
-      window.removeEventListener("portfolio-motion-change", update); preference.removeEventListener("change", update);
-    };
-  }, []);
-
-  function goTo(index: number) {
-    if (!journey.current) return;
-    modalRef.current?.close();
-    const root = journey.current;
-    const top = window.scrollY + root.getBoundingClientRect().top + chapters[index].at * (root.offsetHeight - window.innerHeight);
-    cancelAnimationFrame(navigationFrameRef.current);
-    if (quiet || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      window.scrollTo({ top, behavior: "instant" });
-      navigationFrameRef.current = 0;
-      return;
-    }
-    // Native smooth scrolling rushes a long journey into a few hundred ms.
-    // Give button navigation an explicit, gentle duration; wheel/touch stay native.
-    const start = window.scrollY;
-    const distance = top - start;
-    const duration = Math.min(3200, 2000 + Math.abs(distance) / window.innerHeight * 45);
-    const started = performance.now();
-    function step(now: number) {
-      const t = clamp((now - started) / duration);
-      const eased = t * t * (3 - 2 * t);
-      window.scrollTo({ top: start + distance * eased, behavior: "instant" });
-      navigationFrameRef.current = t < 1 ? requestAnimationFrame(step) : 0;
-    }
-    navigationFrameRef.current = requestAnimationFrame(step);
-  }
-  function toggleMotion() {
-    quietRef.current = !quiet; setQuiet(!quiet);
-    window.dispatchEvent(new Event("portfolio-motion-change"));
-  }
-  function open(view: DetailView) { setDetail(view); modalRef.current?.showModal(); }
-
-  return (
-    <main className="journey" ref={journey} data-scene={active}>
-      <div className="stage">
-        <WorkspaceWorld controllerRef={worldRef} />
-        <header className="site-header">
-          <button className="wordmark" onClick={() => goTo(0)} aria-label="Yainezu, back to the studio">yainezu<span>✳</span></button>
-          <span className="header-descriptor">A CURIOUS MIND.<br />A WORK IN PROGRESS.</span>
-          <nav aria-label="Portfolio navigation">
-            <button onClick={() => goTo(1)} aria-current={active === 1 ? "page" : undefined}>About</button>
-            <button onClick={() => goTo(3)} aria-current={active === 3 ? "page" : undefined}>Experience</button>
-            <button onClick={() => goTo(4)} aria-current={active === 4 ? "page" : undefined}>Work</button>
-            <button onClick={() => open("index")} className="index-button">Chapter index <span>☷</span></button>
-          </nav>
-        </header>
-
-        <div className="scene-caption-label" aria-hidden="true"><span className="live-dot" /> A LITTLE WINDOW INTO MY WORLD</div>
-        <button className="resume-button" onClick={() => open("resume")}>Read résumé <span>↗</span></button>
-        {chapters.map((chapter, i) => (
-          <section key={chapter.id} ref={element => { captionsRef.current[i] = element; }} className={`caption caption-${chapter.side} ${i === 0 ? "intro-caption" : ""}`} style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? "visible" : "hidden" }} aria-hidden={i !== 0} inert={i !== 0}>
-            <p className="eyebrow">{chapter.eyebrow}</p>
-            {i === 0 ? <h1>{chapter.title}<br /><em>{chapter.accent}</em></h1> : <h2>{chapter.title}<br /><em>{chapter.accent}</em></h2>}
-            <p className="caption-body">{chapter.body}</p>
-            {i === 0 && <button className="text-link" onClick={() => goTo(1)}>Come a little closer <span>↘</span></button>}
-            {i === 1 && <div className="interest-tags"><span>Frontend development</span><span>Pixel art</span><span>Retro design</span></div>}
-            {i === 2 && <><p className="mini-label">TOOLS BEHIND THIS PORTFOLIO</p><div className="interest-tags"><span>React</span><span>TypeScript</span><span>Next.js</span><span>Three.js</span></div></>}
-            {i === 3 && (experience.length ? <div className="career-preview">{experience.slice(0, 2).map(job => <div key={job.company + job.period}><small>{job.period}</small><strong>{job.role}</strong><span>{job.company}</span></div>)}<button className="text-link" onClick={() => open("resume")}>Read the full journey <span>↗</span></button></div> : <p className="chapter-placeholder"><span>✎</span> Career details coming soon.</p>)}
-            {i === 4 && <button className="project-preview" onClick={() => open("project")}><span className="project-mark">↗</span><span><small>{projects[0].category}</small><strong>{projects[0].name}</strong></span><span>↗</span></button>}
-            {i === 5 && <ol className="process-list"><li><span>01</span> Understand the idea</li><li><span>02</span> Build with intention</li><li><span>03</span> Refine the details</li></ol>}
-            {i === 6 && (education.length ? <div className="career-preview">{education.slice(0, 2).map(item => <div key={item.title}><small>{item.period}</small><strong>{item.title}</strong><span>{item.institution}</span></div>)}</div> : <p className="chapter-placeholder"><span>↳</span> Education & learning notes coming soon.</p>)}
-            {i === 7 && <><div className="closing-links">{profile.email && <a className="text-link" href={`mailto:${profile.email}`}>Say hello <span>↗</span></a>}<button className="text-link" onClick={() => goTo(0)}>Another look around <span>↺</span></button></div><p className="signature">With curiosity, Yainezu.</p></>}
-          </section>
-        ))}
-
-        <div className="camera-caption" aria-hidden="true"><span>{String(active + 1).padStart(2, "0")}</span><div>{chapters[active].object}<small>{chapters[active].note}</small></div></div>
-        <footer className="scene-footer">
-          <span className="scroll-instruction"><span>↓</span><span>TAKE YOUR TIME<small>Scroll to turn the page</small></span></span>
-          <nav className="chapter-nav" aria-label="Story chapters">{chapters.map((chapter, i) => <button key={chapter.id} onClick={() => goTo(i)} aria-label={`Chapter ${i + 1}: ${chapter.label}`} title={chapter.label} aria-current={active === i ? "step" : undefined}><span>{String(i + 1).padStart(2, "0")}</span><i /></button>)}</nav>
-          <button className="motion-toggle" onClick={toggleMotion} aria-pressed={quiet}>{quiet ? "◯" : "◌"}<span>Motion {quiet ? "off" : "on"}</span></button>
-        </footer>
-        <div className="reading-progress" />
-      </div>
-
-      <dialog ref={modalRef} className={`details-dialog ${detail === "resume" ? "resume-dialog" : ""}`} aria-labelledby="dialog-title" onClick={e => { if (e.target === e.currentTarget) modalRef.current?.close(); }}>
-        <button className="dialog-close" aria-label="Close details" onClick={() => modalRef.current?.close()}>×</button>
-        {detail === "index" && <><p className="eyebrow">A STORY IN EIGHT CHAPTERS</p><h2 id="dialog-title">Find your<br /><em>own way around.</em></h2><div className="chapter-index">{chapters.map((chapter, i) => <button key={chapter.id} onClick={() => goTo(i)}><span>{String(i + 1).padStart(2, "0")}</span><strong>{chapter.label}</strong><span>↗</span></button>)}</div></>}
-        {detail === "project" && <><p className="eyebrow">PERSONAL PROJECT / IN PROGRESS</p><h2 id="dialog-title">A little world<br /><em>of my own.</em></h2><p className="dialog-lead">{projects[0].summary}</p><div className="interest-tags">{projects[0].stack.map(tool => <span key={tool}>{tool}</span>)}</div><div className="project-notes"><h3>The idea</h3><p>Present a portfolio as a place to explore. The camera moves around one continuous workspace while the content follows the objects in the room.</p><h3>The details</h3><p>A scroll-controlled camera, layered interface animations, a responsive layout, and an optional quiet view with less motion.</p></div><button className="text-link" onClick={() => modalRef.current?.close()}>Back to the workspace <span>↗</span></button></>}
-        {detail === "resume" && <><p className="eyebrow">THE STORY, AT YOUR OWN PACE</p><h2 id="dialog-title">{profile.name}<br /><em>{profile.role}</em></h2><p className="dialog-lead">{profile.introduction}</p><div className="resume-sections"><section><h3>01 / About</h3><p>Frontend development, pixel art, and retro design. Curious about how thoughtful interfaces and creative technology come together.</p></section><section><h3>02 / Experience</h3>{experience.length ? experience.map(job => <article key={job.company + job.period}><small>{job.period}</small><h4>{job.role} · {job.company}</h4><p>{job.summary}</p><ul>{job.highlights.map(item => <li key={item}>{item}</li>)}</ul></article>) : <p className="muted">Career details haven’t been added yet.</p>}</section><section><h3>03 / Selected work</h3>{projects.map(project => <article key={project.name}><small>{project.category}</small><h4>{project.name}</h4><p>{project.summary}</p><div className="interest-tags">{project.stack.map(tool => <span key={tool}>{tool}</span>)}</div>{project.url && <a href={project.url}>Visit project ↗</a>}</article>)}</section><section><h3>04 / Education & learning</h3>{education.length ? education.map(item => <article key={item.title}><small>{item.period}</small><h4>{item.title} · {item.institution}</h4><p>{item.summary}</p></article>) : <p className="muted">Education and course details haven’t been added yet.</p>}</section><section><h3>05 / Elsewhere</h3>{profile.email || profile.github || profile.linkedin ? <div className="closing-links">{profile.email && <a href={`mailto:${profile.email}`}>Email ↗</a>}{profile.github && <a href={profile.github}>GitHub ↗</a>}{profile.linkedin && <a href={profile.linkedin}>LinkedIn ↗</a>}</div> : <p className="muted">Contact links coming soon.</p>}</section></div><button className="text-link" onClick={() => modalRef.current?.close()}>Back to the story <span>↗</span></button></>}
-      </dialog>
-    </main>
-  );
+  return <main className={s.page} id="top">
+    <a href="#about" className={s.skip}>Skip to content</a>
+    <header className={s.header}>
+      <a href="#top" className={s.wordmark} aria-label={`${profile.name} home`}>YAINEZU<span>✳</span></a>
+      <div className={s.navline}><span>Software engineer & curious human</span><nav aria-label="Main navigation"><a href="#about">About</a><a href="#work">Work</a><a href="#notebook">Notebook</a><a href="#contact">Say hello ↗</a></nav></div>
+    </header>
+    <section className={s.hero} aria-labelledby="intro">
+      <div className={s.heroNote}><span className={s.spark}>✳</span><p>A personal corner<br/>of the internet.</p></div>
+      <h1 id="intro">A little code.<br/>A lot of care.<br/><em>A world of possibilities.</em></h1>
+      <div className={s.meta}><span>PORTFOLIO / VOL. 02</span><a href="#work">SCROLL TO EXPLORE ↓</a><span>● ALWAYS CURIOUS</span></div>
+    </section>
+    <section className={s.collage} aria-label="A collection of code, landscapes, and creative experiments">
+      <div className={s.gridLines} aria-hidden="true"/>
+      <div className={s.landscape}><div className={s.windowBar}><span>somewhere-nice.png</span><span>− □ ×</span></div><Landscape/><span className={s.imageLabel}>A LITTLE SPACE TO THINK.</span></div>
+      <div className={s.codeCard}><div className={s.windowBar}>hello.tsx <span>↗</span></div><pre><span>const</span>{' developer = {\n  name: "Yainezu",\n  loves: [\n    "thoughtful interfaces",\n    "small details",\n    "a good cup of coffee"\n  ],\n  curiosity: Infinity\n};'}</pre></div>
+      <div className={s.note}>Made with<br/><em>intention.</em><span>AND A LITTLE TRIAL & ERROR.</span></div>
+      <Flower className={s.flower}/><span className={s.collageLabel}>IDEAS IN PROGRESS ↗</span>
+      <a href="/studio" className={s.studioLink}>Step inside my 3D workspace <span>↗</span></a>
+    </section>
+    <div className={s.equation}><span>CURIOSITY</span><i>+</i><span>CODE</span><i>+</i><span>CRAFT</span><i>=</i><em>Something meaningful.</em></div>
+    <section id="about" className={s.about}>
+      <div className={s.sectionLabel}>01 / THE PERSON BEHIND THE SCREEN</div>
+      <h2>I like making things<br/>that work beautifully.<br/><em>And feel a little human.</em></h2>
+      <div className={s.aboutBottom}><div className={s.signature}>Hello, I’m {profile.name}. <span>↗</span></div><div><p>{profile.introduction}</p><p>This is where I collect the things I build, the details I notice, and the ideas I’m still figuring out.</p></div></div>
+    </section>
+    <section id="process" className={s.process}>
+      <div className={s.processIntro}><span className={s.sectionLabel}>02 / HOW I THINK</span><h2>From a<br/>small idea<br/><em>to a real thing.</em></h2><div className={s.path}>A <span>⤳</span> B</div><p>Good work takes a few turns.<br/>That’s part of the process.</p></div>
+      <div>{process.map(([label, title, body], i) => <article className={s.processStep} key={label}><span className={s.sectionLabel}>0{i + 1} / {label.toUpperCase()}</span><h3>{title}</h3><p>{body}</p></article>)}</div>
+    </section>
+    <section className={s.work} id="work"><div className={s.workHeading}><div><span className={s.sectionLabel}>03 / IDEAS INTO REALITY</span><h2>Selected<br/><em>work.</em></h2></div><p>A small collection of things<br/>I’m bringing to life.<br/>Built with curiosity. Refined with care.</p></div>
+      {projects.map((project, i) => <article key={project.name} className={s.project}><a className={s.projectPreview} href={project.url || "/studio"} aria-label={`Explore ${project.name}`}><div className={s.miniBrowser}><div className={s.windowBar}><span>● ● ●</span><span>yainezu / studio</span><span>↗</span></div><div className={s.miniContent}><span>A PERSONAL WORKSPACE</span><h3>A little code.<br/><em>A world of<br/>possibilities.</em></h3><div className={s.deskIcon} aria-hidden="true"><div className={s.monitor}>{"</>"}</div><div className={s.desk}/><div className={s.cup}/></div></div></div><span className={s.roundLink}>EXPLORE<br/>↗</span></a><div className={s.projectInfo}><h3>0{i + 1}. {project.name}</h3><span>{project.stack.join(" / ")}</span></div><p>{project.summary}</p></article>)}
+    </section>
+    <section id="notebook" className={s.notebook}><div className={s.sectionLabel}>04 / NOTES FROM MY DESKTOP</div><h2>Still curious.<br/><em>Still becoming.</em></h2><div className={s.desktop}>
+      <article className={s.readme}><div className={s.windowBar}><span>readme.md</span><span>− □ ×</span></div><div className={s.readmeBody}><span># A little about me</span><h3>Some things<br/>behind the code.</h3><details open><summary>01 — What I’m drawn to</summary><p>The place where engineering meets visual storytelling. Interfaces that are clear, useful, and have a little personality.</p></details><details><summary>02 — What’s in this portfolio?</summary><p>A Next.js and TypeScript website, an interactive Three.js workspace, and an ongoing exploration of motion and design.</p></details><details><summary>03 — Beyond the screen</summary><p>Pixel art, retro design, and the small things that spark a new idea.</p></details></div></article>
+      <div className={s.desktopAside}><Flower className={s.desktopFlower}/><div className={s.fileIcon}>TS<span>TypeScript</span></div><div className={s.ticket}><span>PERSONAL FIELD NOTES</span><p>Stay curious.<br/>Make things.<br/><em>Care about them.</em></p><span>YAINEZU / ALWAYS IN PROGRESS</span></div></div>
+    </div></section>
+    {(experience.length > 0 || education.length > 0) && <section className={s.about} id="journey"><span className={s.sectionLabel}>THE JOURNEY SO FAR</span>{experience.map(item => <article key={`${item.company}-${item.period}`}><h3>{item.role} / {item.company}</h3><p>{item.period}</p><p>{item.summary}</p><ul>{item.highlights.map(h => <li key={h}>{h}</li>)}</ul></article>)}{education.map(item => <article key={`${item.institution}-${item.period}`}><h3>{item.title} / {item.institution}</h3><p>{item.period}</p><p>{item.summary}</p></article>)}</section>}
+    <footer className={s.footer} id="contact"><span className={s.sectionLabel}>THE NEXT CHAPTER</span><h2>Good things start<br/><em>with a little hello.</em></h2><div className={s.footerLinks}>{profile.email && <a href={`mailto:${profile.email}`}>Say hello ↗</a>}{profile.github && <a href={profile.github}>GitHub ↗</a>}{profile.linkedin && <a href={profile.linkedin}>LinkedIn ↗</a>}<a href="/studio">Visit my workspace ↗</a><a href="#top">Back to top ↑</a></div><div className={s.footerMark}>YAINEZU<Flower/></div><div className={s.meta}><span>SOFTWARE ENGINEER & CURIOUS HUMAN</span><span>A LITTLE CORNER OF THE INTERNET.</span></div></footer>
+  </main>;
 }

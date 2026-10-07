@@ -18,6 +18,14 @@ Open [http://localhost:3200](http://localhost:3200) with your browser to see the
 
 The page is in `src/app/page.tsx`. The development server updates the preview as files change.
 
+## Editorial redesign
+
+The `/` route is a new editorial portfolio inspired by https://neutomni.com/: oversized typography, generous whitespace, a desktop collage, process chapters, and a notebook. All artwork is local SVG/CSS and the colors retain our cozy-paper palette. The previous 3D portfolio is preserved at `/studio` and in the baseline commit `199f9d1` on `master`.
+
+- `src/app/page.tsx` contains the editorial layout, native notebook disclosures, and links to the studio.
+- `src/app/editorial.module.css` scopes responsive styles to the new design. The flower motion respects reduced-motion preferences.
+- Contact links and career sections appear only when their corresponding profile data is provided.
+
 ## Portfolio content and scenes
 
 - `src/data/portfolio.ts` contains the profile, eight chapters, experience, projects, education, and contact links. Unknown career details are intentionally empty; add verified CV content here.
