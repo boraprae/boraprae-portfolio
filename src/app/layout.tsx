@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Yainezu — Software Engineer & Creative Mind",
-  description: "A little corner of the internet by Yainezu. Software engineering, thoughtful interfaces, and a playful illustrated workspace.",
+  description: "A little corner of the internet by Yainezu. Software engineering, thoughtful interfaces, scroll-driven visual stories, and an interactive workspace.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

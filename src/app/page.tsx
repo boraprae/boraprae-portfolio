@@ -1,4 +1,5 @@
 import Image from "next/image";
+import FocusPresentation from "@/components/focus-presentation";
 import EditorialMotion from "@/components/editorial-motion";
 import PortfolioDesktop, { PlayfulShape } from "@/components/portfolio-desktop";
 import { profile } from "@/data/portfolio";
@@ -18,7 +19,7 @@ function Star({ className = "" }: { className?: string }) {
   return <svg className={className} viewBox="0 0 200 200" aria-hidden="true"><path fill="currentColor" d="m100 0 18 58 53-29-29 53 58 18-58 18 29 53-53-29-18 58-18-58-53 29 29-53L0 100l58-18-29-53 53 29Z"/></svg>;
 }
 function StudyInterface({ small = false }: { small?: boolean }) {
-  return <div className={`${s.studyInterface} ${small ? s.smallInterface : ""}`}><div className={s.studyNav}><b>little things®</b><span>Today &nbsp; / &nbsp; My space</span><span>✳</span></div><div className={s.studyBody}><span className={s.micro}>MAKE SPACE FOR WHAT MATTERS.</span><h3>A gentler way<br/>to get <em>things done.</em></h3><div className={s.studyWidgets}><div><span>THIS WEEK</span><b>Make something<br/>you care about.</b><div className={s.bars}>{[35,60,45,80,65,95,75].map((h,i)=><i key={i} style={{height:`${h}%`}}/>)}</div></div><div><span>YOUR DAILY PAUSE</span><Star/><p>One thing at a time.</p></div></div></div></div>;
+  return <div className={`${s.studyInterface} ${small ? s.smallInterface : ""}`}><div className={s.studyNav}><b>little things</b><span>Today &nbsp; / &nbsp; My space</span><span>✳</span></div><div className={s.studyBody}><span className={s.micro}>MAKE SPACE FOR WHAT MATTERS.</span><h3>A gentler way<br/>to get <em>things done.</em></h3><div className={s.studyWidgets}><div><span>THIS WEEK</span><b>Make something<br/>you care about.</b><div className={s.bars}>{[35,60,45,80,65,95,75].map((h,i)=><i key={i} style={{height:`${h}%`}}/>)}</div></div><div><span>YOUR DAILY PAUSE</span><Star/><p>One thing at a time.</p></div></div></div></div>;
 }
 
 export default function Home() {
@@ -31,7 +32,7 @@ export default function Home() {
     </header>
     <section className={s.hero} data-scene="hero">
       <div className={s.bigBrand}><Wordmark/></div>
-      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><span><em>A little corner of the internet.</em></span></div>
+      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><nav aria-label="Intro navigation"><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav><span><em>A little corner of the internet.</em></span></div>
       <h1>I build things for<br/>people who care<br/><em>about the little things.</em></h1>
       <div className={s.heroMeta}><span>BASED IN CURIOSITY<br/>BUILT WITH CARE</span><a href="#reel">SCROLL TO EXPLORE ↓</a><span>▪ ALWAYS BECOMING</span></div>
     </section>
@@ -86,7 +87,8 @@ export default function Home() {
 
     <section className={s.computerTrack} id="desktop" data-scene="computer" aria-label="Explore my interactive desktop">
       <div className={s.computerStage}>
-        <div className={s.computerIntro}><span className={s.micro}>A FEW THINGS BEHIND THE SCREEN</span><h2>Come a little<br/><em>closer.</em></h2><span>KEEP SCROLLING ↓</span></div>
+        <div className={s.focusScene} data-focus-scene><FocusPresentation/></div>
+        <div className={s.computerIntro} data-computer-intro><span className={s.micro}>A FEW THINGS BEHIND THE SCREEN</span><h2>Come a little<br/><em>closer.</em></h2><span>KEEP SCROLLING ↓</span><button className={s.desktopShortcut} data-desktop-jump>Or open my desktop ↗</button></div>
         <div className={s.monitorWrap}><Image src="/images/editorial/crt-sage.png" alt="Sage green retro computer displaying a peaceful landscape" width={1280} height={1280}/></div>
         <div className={s.desktopReveal}><PortfolioDesktop/></div>
         <div className={s.computerProgress} aria-hidden="true"><span/></div>

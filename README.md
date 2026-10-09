@@ -20,12 +20,17 @@ The page is in `src/app/page.tsx`. The development server updates the preview as
 
 ## Editorial redesign
 
-The `/` route is a new editorial portfolio inspired by https://neutomni.com/: oversized typography, generous whitespace, a desktop collage, process chapters, and a notebook. All artwork is local SVG/CSS and the colors retain our cozy-paper palette. The previous 3D portfolio is preserved at `/studio` and in the baseline commit `199f9d1` on `master`.
+The `/` route follows the visual sequence of https://neutomni.com/ while retaining our cozy-paper palette and personal portfolio content. The previous 3D portfolio remains at `/studio` and in baseline commit `199f9d1` on `master`.
 
-- `src/app/page.tsx` contains the editorial layout, native notebook disclosures, and links to the studio.
-- `src/components/editorial-motion.tsx` drives reversible motion from native scroll: a 260svh pinned collage (240svh mobile), long process reading steps, and project/notebook entrances. Updates run only on scroll/resize; reduced motion restores the static layout.
-- `src/app/editorial.module.css` scopes responsive styles to the new design. The flower motion respects reduced-motion preferences.
-- Contact links and career sections appear only when their corresponding profile data is provided.
+- `src/app/page.tsx`: large wordmark, expanding montage, asymmetric introduction, rising process columns, three stacked work panels, a CRT zoom, selective-focus statement, staggered ticket flips, a continuous window-to-desktop transition, and contact section.
+- `src/components/editorial-motion.tsx`: native, reversible scroll timeline; scoped to `data-scene`. No scroll hijacking. Anchor/project navigation takes 1.5–2.4 seconds and yields immediately to manual input.
+- `src/lib/editorial-timeline.ts`: deterministic process, project, and computer keyframes. Project reading holds and the desktop dwell do not move while reading.
+- `src/components/portfolio-desktop.tsx`: interactive files, draggable window, close/reopen/reset controls, notebook disclosures, and keyboard-operable footer shape.
+- `src/app/editorial.module.css`: desktop and mobile scene layouts. Pause motion and system reduced-motion preferences restore continuous static content; hidden scene content is not keyboard-focusable.
+- `public/images/editorial/`: generated studio, CRT, and meadow artwork. Prompts and provenance are recorded in `GENERATION.md`. They illustrate concepts, not client work or the portfolio owner's real appearance.
+- `tests/editorial-timeline.test.mjs`: `node --experimental-strip-types --test tests/editorial-timeline.test.mjs` (Node 22.6+). The app supports the Node version specified in package.json.
+
+The reference's film-like introduction is recreated with independently moving image/interface layers rather than a pre-rendered video. Real profile/contact details still come from `src/data/portfolio.ts`; unverified career claims and testimonials are not invented.
 
 ## Portfolio content and scenes
 
