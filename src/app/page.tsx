@@ -54,9 +54,9 @@ export default function Home() {
         </div>
       </div>
     </section>
-    <div className={s.equation}><span>DESIGN</span><span>+</span><span>ENGINEERING</span><span>+</span><span>CURIOSITY</span><span>=</span><span>FULL CIRCLE</span></div>
 
     <section className={s.about} id="about" data-scene="reveal">
+      <div className={s.equation}><span>DESIGN</span><span>+</span><span>ENGINEERING</span><span>+</span><span>CURIOSITY</span><span>=</span><span>FULL CIRCLE</span></div>
       <h2>Good software is more<br/>than what’s on a screen.<br/><em>It’s the small things<br/>that make it feel human.</em></h2>
       <div className={s.aboutPhoto}><Image src="/images/editorial/studio-editorial.png" alt="A warm studio, imagined in our cozy palette" width={900} height={506}/><span className={s.micro}>AN IMAGINED STUDIO / GENERATED ARTWORK</span></div>
       <p className={s.aboutCopy}>{profile.introduction}<br/><em>A curious mind → a thoughtful interface.</em></p>
