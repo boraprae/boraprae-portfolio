@@ -13,8 +13,8 @@ const steps = [
   { name: "Refine", accent: "& care", text: "Use it. Check the edges. Listen, learn, and keep making the experience a little better." },
 ];
 
-function Wordmark({ compact = false }: { compact?: boolean }) {
-  return <svg className={compact ? s.miniWordmark : s.wordmark} viewBox="0 0 1000 164" role="img" aria-label="Yainezu"><text x="0" y="150" textLength="990" lengthAdjust="spacingAndGlyphs">YAINEZU</text><path d="M165 12l-15 131M640 14l14 130" stroke="var(--paper)" strokeWidth="5"/></svg>;
+function Wordmark() {
+  return <svg className={s.wordmark} viewBox="0 0 1000 164" role="img" aria-label="Yainezu"><text x="0" y="150" textLength="990" lengthAdjust="spacingAndGlyphs">YAINEZU</text><path d="M165 12l-15 131M640 14l14 130" stroke="var(--paper)" strokeWidth="5"/></svg>;
 }
 function Star({ className = "" }: { className?: string }) {
   return <svg className={className} viewBox="0 0 200 200" aria-hidden="true"><path fill="currentColor" d="m100 0 18 58 53-29-29 53 58 18-58 18 29 53-53-29-18 58-18-58-53 29 29-53L0 100l58-18-29-53 53 29Z"/></svg>;
@@ -27,7 +27,6 @@ export default function Home() {
   return <EditorialMotion className={s.page}>
     <a href="#intro" className={s.skip}>Skip to content</a>
     <header className={s.fixedNav}>
-      <a href="#top" className={s.navBrand} aria-label="Yainezu home"><Wordmark compact/></a>
       <nav aria-label="Main navigation"><a href="#teaser">Teaser</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav>
       <button data-motion-toggle aria-pressed="false" className={s.motionToggle}>Pause motion</button>
     </header>
