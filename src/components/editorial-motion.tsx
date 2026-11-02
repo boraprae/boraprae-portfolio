@@ -38,6 +38,14 @@ export default function EditorialMotion({ children, className }: { children: Rea
         const p = clamp(-box.top / Math.max(1, box.height - height));
         property(scene, "--p", p);
         switch (scene.dataset.scene) {
+          case "teaser": {
+            // The opening film sinks and dims as the brand hero takes over.
+            const leave = clamp(-box.top / height);
+            property(scene, "--teaser-scale", 1 - leave * .08);
+            property(scene, "--teaser-y", leave * -45, "px");
+            property(scene, "--teaser-fade", 1 - leave * .8);
+            break;
+          }
           case "hero":
             property(scene, "--hero-y", clamp(-box.top / height) * 55, "px");
             break;

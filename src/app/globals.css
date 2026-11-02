@@ -9,7 +9,10 @@
   --accent: #8d9c75;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--paper); color: var(--ink); }
+/* The home page is the PearTeaser dark system; /studio keeps the cozy paper
+   palette, so the document base is dark and .journey paints its own ground. */
+html, body { margin: 0; background: #040711; color: var(--ink); }
+.journey { background: var(--paper); color: var(--ink); }
 body { font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 button:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }

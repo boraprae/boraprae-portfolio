@@ -1,6 +1,7 @@
 import Image from "next/image";
 import FocusPresentation from "@/components/focus-presentation";
 import EditorialMotion from "@/components/editorial-motion";
+import TeaserHero from "@/components/teaser-hero";
 import PortfolioDesktop, { PlayfulShape } from "@/components/portfolio-desktop";
 import { profile } from "@/data/portfolio";
 import s from "./editorial.module.css";
@@ -24,15 +25,16 @@ function StudyInterface({ small = false }: { small?: boolean }) {
 
 export default function Home() {
   return <EditorialMotion className={s.page}>
-    <a href="#about" className={s.skip}>Skip to content</a>
+    <a href="#intro" className={s.skip}>Skip to content</a>
     <header className={s.fixedNav}>
       <a href="#top" className={s.navBrand} aria-label="Yainezu home"><Wordmark compact/></a>
-      <nav aria-label="Main navigation"><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav>
+      <nav aria-label="Main navigation"><a href="#teaser">Teaser</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav>
       <button data-motion-toggle aria-pressed="false" className={s.motionToggle}>Pause motion</button>
     </header>
-    <section className={s.hero} data-scene="hero">
+    <TeaserHero />
+    <section className={s.hero} id="intro" data-scene="hero">
       <div className={s.bigBrand}><Wordmark/></div>
-      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><nav aria-label="Intro navigation"><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav><span><em>A little corner of the internet.</em></span></div>
+      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><nav aria-label="Intro navigation"><a href="#teaser">Teaser</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav><span><em>A little corner of the internet.</em></span></div>
       <h1>I build things for<br/>people who care<br/><em>about the little things.</em></h1>
       <div className={s.heroMeta}><span>BASED IN CURIOSITY<br/>BUILT WITH CARE</span><a href="#reel">SCROLL TO EXPLORE ↓</a><span>▪ ALWAYS BECOMING</span></div>
     </section>
@@ -97,7 +99,7 @@ export default function Home() {
 
     <footer className={s.footer} id="contact" data-scene="reveal">
       <span className={s.micro}>THE NEXT CHAPTER</span><div className={s.contactGrid}><div><h2>Good things start<br/><em>with a little hello.</em></h2><p>That’s a little glimpse into my world.<br/>Thanks for taking the time to look around.<br/><em>This story is still being written.</em></p>{profile.email ? <a className={s.contactLink} href={`mailto:${profile.email}`}>[ LET’S TALK ↗ ]</a> : <a className={s.contactLink} href="/studio">[ STEP INSIDE MY STUDIO ↗ ]</a>}</div><PlayfulShape/></div>
-      <div className={s.footerLinks}><span>{profile.name} / Software engineer</span><nav aria-label="Footer navigation"><a href="#about">About</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#top">Back to top ↑</a></nav></div><Wordmark/>
+      <div className={s.footerLinks}><span>{profile.name} / Software engineer</span><nav aria-label="Footer navigation"><a href="#teaser">Teaser</a><a href="#about">About</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#top">Back to top ↑</a></nav></div><Wordmark/>
     </footer>
   </EditorialMotion>;
 }
