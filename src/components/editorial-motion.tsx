@@ -32,20 +32,11 @@ export default function EditorialMotion({ children, className }: { children: Rea
       frame = 0;
       const height = window.innerHeight;
       const mobile = window.innerWidth <= 750;
-      element!.dataset.scrolled = String(window.scrollY > 160);
       const measurements = scenes.map(scene => ({ scene, box: scene.getBoundingClientRect() }));
       for (const { scene, box } of measurements) {
         const p = clamp(-box.top / Math.max(1, box.height - height));
         property(scene, "--p", p);
         switch (scene.dataset.scene) {
-          case "teaser": {
-            // The opening film sinks and dims as the brand hero takes over.
-            const leave = clamp(-box.top / height);
-            property(scene, "--teaser-scale", 1 - leave * .08);
-            property(scene, "--teaser-y", leave * -45, "px");
-            property(scene, "--teaser-fade", 1 - leave * .8);
-            break;
-          }
           case "hero":
             property(scene, "--hero-y", clamp(-box.top / height) * 55, "px");
             break;
@@ -220,7 +211,7 @@ export default function EditorialMotion({ children, className }: { children: Rea
       if (!destination) return;
       event.preventDefault();
       history.replaceState(null, "", `#${id}`);
-      scrollToPosition(id === "top" ? 0 : window.scrollY + destination.getBoundingClientRect().top - 58);
+      scrollToPosition(id === "top" ? 0 : window.scrollY + destination.getBoundingClientRect().top);
     }
     const observer = new ResizeObserver(schedule);
     observer.observe(element);
@@ -243,7 +234,7 @@ export default function EditorialMotion({ children, className }: { children: Rea
       if (!initialHash) return;
       const target = document.getElementById(initialHash);
       if (!target) return;
-      window.scrollTo({ top: initialHash === "top" ? 0 : window.scrollY + target.getBoundingClientRect().top - 58, behavior: "instant" });
+      window.scrollTo({ top: initialHash === "top" ? 0 : window.scrollY + target.getBoundingClientRect().top, behavior: "instant" });
       schedule();
     }
     const restoreFrame = requestAnimationFrame(restoreHash);

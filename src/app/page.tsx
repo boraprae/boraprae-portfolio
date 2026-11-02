@@ -33,7 +33,7 @@ export default function Home() {
     <TeaserHero />
     <section className={s.hero} id="intro" data-scene="hero">
       <div className={s.bigBrand}><Wordmark/></div>
-      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><nav aria-label="Intro navigation"><a href="#teaser">Teaser</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav><span><em>A little corner of the internet.</em></span></div>
+      <div className={s.heroByline}><span>Software Engineer & Creative Mind</span><span><em>A little corner of the internet.</em></span></div>
       <h1>I build things for<br/>people who care<br/><em>about the little things.</em></h1>
       <div className={s.heroMeta}><span>BASED IN CURIOSITY<br/>BUILT WITH CARE</span><a href="#reel">SCROLL TO EXPLORE ↓</a><span>▪ ALWAYS BECOMING</span></div>
     </section>
