@@ -502,17 +502,18 @@
 /* The film is dark at the edges but not uniformly — the scrim keeps the pills legible. */
 .teaser::after { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 190px; pointer-events: none; background: linear-gradient(180deg, rgba(4,7,17,0), rgba(4,7,17,.72)); }
 
-.pill { display: inline-flex; align-items: center; gap: 9px; padding: 11px 20px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--glass); backdrop-filter: blur(14px); font: 12px var(--font-sans); letter-spacing: -.01em; color: var(--ink-80); transition: color .2s, border-color .2s, background .2s; }
-.pill:hover { color: var(--ink); border-color: var(--line-3); background: var(--glass-2); }
-.pill[aria-pressed="true"] { color: var(--ink); border-color: rgba(56,189,248,.6); background: rgba(56,189,248,.15); }
-.pill>span { font-size: 11px; color: var(--cyan-300); }
-.pillGhost { margin-left: auto; border-color: transparent; background: none; color: var(--ink-60); font: 10px var(--font-mono); letter-spacing: .06em; }
-.pillGhost:hover { color: var(--cyan-200); background: none; border-color: transparent; }
+/* Icon-only controls: the label lives in aria-label and the tooltip, not on screen. */
+.iconPill { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid var(--line-2); border-radius: 999px; background: var(--glass); backdrop-filter: blur(14px); color: var(--ink-80); transition: color .2s, border-color .2s, background .2s; }
+.iconPill:hover { color: var(--ink); border-color: var(--line-3); background: var(--glass-2); }
+.iconPill[aria-pressed="true"] { color: var(--cyan-200); border-color: rgba(56,189,248,.6); background: rgba(56,189,248,.15); }
+.iconPill svg { display: block; }
+.scrollHint { margin-left: auto; color: var(--ink-60); font: 10px var(--font-mono); letter-spacing: .06em; display: inline-flex; align-items: center; gap: 8px; transition: color .2s; }
+.scrollHint:hover { color: var(--cyan-200); }
 
 @media(max-width:750px) {
-  .teaserControls { left: 12px; right: 12px; bottom: 16px; gap: 7px; }
-  .pill { padding: 9px 14px; font-size: 11px; }
-  .pillGhost { margin-left: 0; font-size: 8px; }
+  .teaserControls { left: 12px; right: 12px; bottom: 16px; gap: 8px; }
+  .iconPill { width: 40px; height: 40px; }
+  .scrollHint { font-size: 8px; gap: 6px; }
 }
 
 /* Short phones: the about column is the one screen with no slack left, so it

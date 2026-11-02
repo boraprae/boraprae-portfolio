@@ -6,6 +6,22 @@ import s from "@/app/editorial.module.css";
 const SRC = "/video/pear-teaser.mp4";
 const POSTER = "/video/pear-teaser-poster.jpg";
 
+/* Thin-stroke marks in the film's own idiom; the label moves to aria-label. */
+const Icon = ({ d, fill = false }: { d: string; fill?: boolean }) => (
+  <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"
+    fill={fill ? "currentColor" : "none"} stroke="currentColor"
+    strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+const SPEAKER = "M4 9.5h3.2L12 5.5v13l-4.8-4H4z";
+const WAVES = "M16 9.2a4 4 0 0 1 0 5.6M18.8 6.6a7.6 7.6 0 0 1 0 10.8";
+const SLASH = "M16.5 9.8l4.5 4.4M21 9.8l-4.5 4.4";
+const PAUSE = "M9.5 5.5v13M14.5 5.5v13";
+const PLAY = "M8 5.4l10.5 6.6L8 18.6z";
+const REPLAY = "M19.5 12a7.5 7.5 0 1 1-2.4-5.5M19.6 4.6v4.2h-4.2";
+
+
 /**
  * The opening scene: the teaser fills the viewport and plays itself, silent and
  * looping. Sound is opt-in because the clip carries a voiceover and because a
@@ -106,18 +122,24 @@ export default function TeaserHero() {
       </video>
 
       <div className={s.teaserControls}>
-        <button className={s.pill} onClick={toggleSound} aria-pressed={sound}>
-          <span aria-hidden="true">{sound ? "♪" : "⏾"}</span>
-          {sound ? "Sound on" : "Turn on sound"}
+        <button className={s.iconPill} onClick={toggleSound} aria-pressed={sound}
+          aria-label={sound ? "Turn off sound" : "Turn on sound"}
+          title={sound ? "Turn off sound" : "Turn on sound"}>
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"
+            fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d={SPEAKER} />
+            <path d={sound ? WAVES : SLASH} />
+          </svg>
         </button>
-        <button className={s.pill} onClick={togglePlay} aria-pressed={!playing}>
-          <span aria-hidden="true">{playing ? "❙❙" : "▶"}</span>
-          {playing ? "Pause" : "Play"}
+        <button className={s.iconPill} onClick={togglePlay} aria-pressed={!playing}
+          aria-label={playing ? "Pause the film" : "Play the film"}
+          title={playing ? "Pause the film" : "Play the film"}>
+          <Icon d={playing ? PAUSE : PLAY} fill={!playing} />
         </button>
-        <button className={s.pill} onClick={restart}>
-          <span aria-hidden="true">↺</span>Replay
+        <button className={s.iconPill} onClick={restart} aria-label="Replay from the start" title="Replay from the start">
+          <Icon d={REPLAY} />
         </button>
-        <a href="#intro" className={`${s.pill} ${s.pillGhost}`}>
+        <a href="#intro" className={s.scrollHint}>
           Keep scrolling<span aria-hidden="true">↓</span>
         </a>
       </div>
