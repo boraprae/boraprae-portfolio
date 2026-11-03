@@ -487,7 +487,7 @@
    The film fills the viewport exactly; only the controls sit on top of it.
    ========================================================================== */
 .teaser { position: relative; height: 100svh; overflow: hidden; background: var(--bg-deep); }
-.teaserVideo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; background: var(--bg-deep); }
+.iconPill:disabled { opacity: .4; cursor: default; }
 .teaserControls { position: absolute; z-index: 2; left: 20px; right: 20px; bottom: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 /* The film is dark at the edges but not uniformly — the scrim keeps the pills legible. */
 .teaser::after { content: ''; position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 190px; pointer-events: none; background: linear-gradient(180deg, rgba(4,7,17,0), rgba(4,7,17,.72)); }
