@@ -242,12 +242,8 @@ export const PROMPT_BOX = { w: 1200, h: 232, cy: 610, pad: 26 };
 export const TYPED = "Every business problem deserves a real solution";
 export const KEYWORD = "solution";
 export const KEYWORD_FOCUS = { x: 1503, y: 553 };
-/* The sentence is typed, then the film waits on the send button: the camera
-   only dives into the keyword once someone has pressed it. */
-export const PROMPT_SEND = 146;
-export const PROMPT_ZOOM = { start: PROMPT_SEND + 4, end: PROMPT_SEND + 48 };
-export const KEYWORD_PAN = { start: PROMPT_ZOOM.end + 2, end: PROMPT_ZOOM.end + 30 };
-export const KEYWORD_PUSH = { start: KEYWORD_PAN.start + 24, end: KEYWORD_PAN.start + 46 };
+export const KEYWORD_PAN = { start: 142, end: 170 };
+export const KEYWORD_PUSH = { start: 166, end: 188 };
 export const STACKS = ["React / Next.js", "Vue / Nuxt.js", "TypeScript", "Tailwind CSS", "AI Workflow"];
 
 /* ---- scene 2: keyword becomes the name --------------------------------- */
@@ -395,20 +391,6 @@ export const AT = {
 };
 
 export const DURATION = AT.outro + 200;
-
-/* ---- where the film waits for a click ----------------------------------- */
-
-export type GateKey = "run" | "send";
-
-/**
- * The film plays its own transitions but not its own clicks. At each gate the
- * clock holds on that frame, the control blinks, the pointer comes to rest on
- * it, and nothing moves again until someone presses it.
- */
-export const GATES: { key: GateKey; at: number }[] = [
-  { key: "run", at: AT.hello + HELLO_CLICK },
-  { key: "send", at: AT.prompt + PROMPT_SEND },
-];
 
 /** The scenes, with the overlaps that make one transition into the next. */
 export const SCENES = [

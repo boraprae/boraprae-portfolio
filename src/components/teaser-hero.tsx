@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import s from "@/app/editorial.module.css";
 import TeaserFilm, { useFilmClock } from "@/components/teaser-film";
 
@@ -22,19 +22,14 @@ const REPLAY = "M19.5 12a7.5 7.5 0 1 1-2.4-5.5M19.6 4.6v4.2h-4.2";
  * thanchanok-portfolio-frames/src/PearTeaser.tsx — same frames, same easings,
  * now as DOM, so it stays crisp at any size and carries no 11MB download.
  *
- * It plays itself, loops, and stops while off screen — but it no longer presses
- * its own buttons: at the Run button and at the prompt's send button the clock
- * holds, the control blinks under the pointer, and the film waits for a click.
- * Reduced motion holds it on the frame where the name is on screen instead.
+ * It plays itself, loops, and stops while off screen. Reduced motion holds it
+ * on the frame where the name is on screen instead of running it.
  */
 export default function TeaserHero() {
   const host = useRef<HTMLElement>(null);
   const [reduced, setReduced] = useState(false);
   const [wanted, setWanted] = useState(true);
-  const { frame, gate, release, restart } = useFilmClock(host, wanted && !reduced);
-
-  // Pressing a gate is also a request to watch: it resumes a paused film.
-  const press = useCallback(() => { setWanted(true); release(); }, [release]);
+  const { frame, restart } = useFilmClock(host, wanted && !reduced);
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -70,7 +65,7 @@ export default function TeaserHero() {
 
   return (
     <section ref={host} className={s.teaser} id="teaser" data-scene="teaser" aria-label="Teaser">
-      <TeaserFilm frame={shown} gate={reduced ? null : gate} onRelease={press} />
+      <TeaserFilm frame={shown} />
 
       <div className={s.teaserControls}>
         <button className={s.iconPill} onClick={() => setWanted((v) => !v)} aria-pressed={!playing}
