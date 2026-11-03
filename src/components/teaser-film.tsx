@@ -1,16 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
+import React, {
+  createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState,
+} from "react";
 import {
-  AT, CARD, CLAMP, CODE_LINES, DURATION, EASE, EASE_IN, EASE_OUT, Easing, FPS, GLIDE,
+  AT, CARD, CLAMP, CODE_LINES, DURATION, EASE, EASE_IN, EASE_OUT, Easing, FPS, GATES, GLIDE,
   GRID_CELL, HELLO_CHARS, HELLO_CLICK, HELLO_CURSOR, HELLO_EXIT, HELLO_FONT, HELLO_LOAD,
   HELLO_RUN_BTN, HELLO_SPARKS, HELLO_TYPE, HELLO_WINDOW_W, IDE, IDE_HANDOFF, KEYWORD,
   KEYWORD_FOCUS, KEYWORD_PAN, KEYWORD_PUSH, LAST_ROLE_X, LAUNCH_AT, LAUNCH_GROW, LEAD_IN,
   LOGO_POP_AT, LOGO_POP_SIZE, NAME, NAME_T, OUTRO_LINE1, OUTRO_TOGETHER, OVERVIEW,
-  PEAR_BODY, PROJECTS, PROMPT_BOX, ROLE_FINAL, ROLE_LAST, ROLE_NODES, ROLE_SEGMENTS,
-  ROLE_SEG_TIMING, ROLE_TIMING, SCENES, SHOW_OUT, STACKS, TAGLINE, TRACK_STEPS, TYPED,
+  PEAR_BODY, PROJECTS, PROMPT_BOX, PROMPT_ZOOM, ROLE_FINAL, ROLE_LAST, ROLE_NODES,
+  ROLE_SEGMENTS, ROLE_SEG_TIMING, ROLE_TIMING, SCENES, SHOW_OUT, STACKS, TAGLINE,
+  TRACK_STEPS, TYPED,
   interpolate, interpolateColors, launchPearSize, mix, pearPathAt, pointAt, progress,
-  random, smoothstep, smoothstep as _ss, spring, type Pt, type Segment,
+  random, smoothstep, smoothstep as _ss, spring, type GateKey, type Pt, type Segment,
 } from "@/lib/film";
 
 void _ss;
@@ -27,6 +30,58 @@ const Fill: React.FC<{ className?: string; style?: React.CSSProperties; children
   ({ className = "", style, children }) => (
     <div className={`absolute inset-0 ${className}`} style={style}>{children}</div>
   );
+
+type GateState = { waiting: GateKey | null; release: () => void };
+const GateContext = createContext<GateState>({ waiting: null, release: () => {} });
+const useGate = (gate: GateKey) => useContext(GateContext).waiting === gate;
+
+/**
+ * A control the film stops at instead of pressing itself. While the clock is
+ * held here the control blinks under a widening ring and takes the pointer; it
+ * is inert — not focusable, not clickable — at every other moment of the film.
+ */
+const GateButton: React.FC<{
+  gate: GateKey;
+  label: string;
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+}> = ({ gate, label, className = "", style, children }) => {
+  const { waiting, release } = useContext(GateContext);
+  const live = waiting === gate;
+  return (
+    <button
+      type="button"
+      className={`film-gate ${className}`}
+      onClick={live ? release : undefined}
+      tabIndex={live ? 0 : -1}
+      aria-hidden={!live}
+      aria-label={label}
+      title={live ? label : undefined}
+      style={{
+        pointerEvents: live ? "auto" : "none",
+        cursor: live ? "pointer" : "default",
+        animation: live ? "filmGlow 1.5s ease-in-out infinite" : undefined,
+        ...style,
+      }}
+    >
+      {children}
+    </button>
+  );
+};
+
+/** The ring widening off a gate's control, drawn on the canvas so no panel clips it. */
+const GateHalo: React.FC<{ x: number; y: number; size: number; color: string }> = ({ x, y, size, color }) => (
+  <>
+    {[0, 0.75].map((delay) => (
+      <div key={delay} className="absolute rounded-full" style={{
+        left: x - size / 2, top: y - size / 2, width: size, height: size,
+        border: `2px solid ${color}`, pointerEvents: "none",
+        animation: `filmPulse 1.5s ${delay}s ease-out infinite`,
+      }} />
+    ))}
+  </>
+);
 
 /* ======================================================================== */
 /* backgrounds                                                              */
@@ -202,11 +257,20 @@ const GlobeIcon = () => (
 const MouseCursor: React.FC<{ press: number; style?: React.CSSProperties }> = ({ press, style }) => (
   <svg width={44} height={44} viewBox="0 0 24 24" style={{
     transformOrigin: "3px 2px", transform: `scale(${1 - press * 0.15})`,
+    // It rests on the control the film is waiting on: it must not take the click.
+    pointerEvents: "none",
     filter: "drop-shadow(0 6px 10px rgba(0,0,0,0.45))", ...style,
   }}>
     <path d="M3 2 L3 19.5 L7.6 15.4 L10.6 22 L13.6 20.7 L10.7 14.2 L17 14.2 Z"
       fill="white" stroke="#0b1020" strokeWidth={1.3} strokeLinejoin="round" />
   </svg>
+);
+
+/** The pointer at rest on a gate's control, nudging to say it can be pressed. */
+const GateCursor: React.FC<{ x: number; y: number }> = ({ x, y }) => (
+  <div className="absolute" style={{ left: x - 5, top: y - 4, animation: "filmCursorIn .45s ease-out both" }}>
+    <MouseCursor press={0} style={{ animation: "filmBob 1.5s ease-in-out infinite" }} />
+  </div>
 );
 
 /* ======================================================================== */
@@ -215,6 +279,7 @@ const MouseCursor: React.FC<{ press: number; style?: React.CSSProperties }> = ({
 
 const HelloScene: React.FC = () => {
   const frame = useFrame();
+  const waiting = useGate("run");
   const windowIn = spring({ frame: frame - 2, config: { damping: 20, stiffness: 80 } });
   const typed = interpolate(frame, [HELLO_TYPE.start, HELLO_TYPE.end], [0, HELLO_CHARS.length],
     { ...CLAMP, easing: Easing.bezier(0.37, 0, 0.63, 1) });
@@ -265,19 +330,21 @@ const HelloScene: React.FC = () => {
                 <div className="w-3 h-3 rounded-full bg-amber-400/80" />
                 <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
                 <span className="ml-3 font-mono text-[17px] text-white/50">hello.ts</span>
-                <div className="ml-auto relative h-8 px-4 rounded-full flex items-center gap-2 text-[16px] font-semibold border" style={{
-                  transform: `scale(${1 - press * 0.08})`,
-                  background: `rgba(52,211,153,${mix(ran, 0.16, 0.35)})`,
-                  borderColor: `rgba(110,231,183,${mix(ran, 0.35, 0.7)})`,
-                  color: "#d1fae5",
-                  boxShadow: `0 0 ${ran * 24}px rgba(52,211,153,0.55)`,
-                }}>
+                <GateButton gate="run" label="Run hello.ts"
+                  className="ml-auto relative h-8 px-4 rounded-full flex items-center gap-2 text-[16px] font-semibold border"
+                  style={{
+                    transform: `scale(${1 - press * 0.08})`,
+                    background: `rgba(52,211,153,${mix(ran, 0.16, 0.35)})`,
+                    borderColor: `rgba(110,231,183,${mix(ran, 0.35, 0.7)})`,
+                    color: "#d1fae5",
+                    boxShadow: `0 0 ${ran * 24}px rgba(52,211,153,0.55)`,
+                  }}>
                   <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 1 L11 6 L2 11 Z" fill="currentColor" /></svg>
                   Run
                   <span className="absolute inset-0 rounded-full border-2 border-emerald-300" style={{
                     transform: `scale(${mix(ripple, 1, 1.9)})`, opacity: ripple > 0 ? (1 - ripple) * 0.8 : 0,
                   }} />
-                </div>
+                </GateButton>
               </div>
 
               <div className="flex items-center font-mono px-12 py-9" style={{ fontSize: HELLO_FONT, lineHeight: 1.3 }}>
@@ -330,13 +397,17 @@ const HelloScene: React.FC = () => {
               left: "calc(100% - 72px)", top: 20, opacity: cursorOpacity,
               transform: `translate(${(1 - cursorMove) * 340}px, ${(1 - cursorMove) * 380}px)`,
             }}>
-              <MouseCursor press={press} />
+              <MouseCursor press={press}
+                style={waiting ? { animation: "filmBob 1.5s ease-in-out infinite" } : undefined} />
             </div>
           </div>
         </Fill>
       </Fill>
 
-      {frame >= HELLO_CLICK && shock < 1 && (
+      {waiting && (
+        <GateHalo x={HELLO_RUN_BTN.x} y={HELLO_RUN_BTN.y} size={104} color="rgba(110,231,183,0.85)" />
+      )}
+      {frame > HELLO_CLICK && shock < 1 && (
         <div className="absolute rounded-full" style={{
           left: HELLO_RUN_BTN.x, top: HELLO_RUN_BTN.y,
           width: mix(shock, 40, 2600), height: mix(shock, 40, 2600),
@@ -345,7 +416,7 @@ const HelloScene: React.FC = () => {
           boxShadow: `0 0 40px rgba(52,211,153,${0.4 * (1 - shock)}), inset 0 0 40px rgba(52,211,153,${0.25 * (1 - shock)})`,
         }} />
       )}
-      {frame >= HELLO_CLICK && sparks < 1 && HELLO_SPARKS.map((sp, i) => (
+      {frame > HELLO_CLICK && sparks < 1 && HELLO_SPARKS.map((sp, i) => (
         <div key={i} className="absolute rounded-full" style={{
           left: HELLO_RUN_BTN.x + Math.cos(sp.angle) * sp.dist * sparks,
           top: HELLO_RUN_BTN.y + Math.sin(sp.angle) * sp.dist * sparks,
@@ -373,6 +444,7 @@ const HelloScene: React.FC = () => {
 
 const PromptScene: React.FC = () => {
   const frame = useFrame();
+  const waiting = useGate("send");
   const clip = frame >= LAUNCH_GROW ? undefined : `path('${pearPathAt(960, 540, launchPearSize(frame))}')`;
 
   const plusIn = spring({ frame: frame - 16, config: { damping: 13, stiffness: 140 } });
@@ -386,7 +458,7 @@ const PromptScene: React.FC = () => {
 
   const titleIn = progress(frame, 66, 86, EASE_OUT);
   const placeholder = progress(frame, 74, 86) * (1 - progress(frame, 96, 100));
-  const zoom = progress(frame, 96, 140, EASE);
+  const zoom = progress(frame, PROMPT_ZOOM.start, PROMPT_ZOOM.end, EASE);
   const charsShown = Math.floor(interpolate(frame, [100, 142], [0, TYPED.length], CLAMP));
   const pan = progress(frame, KEYWORD_PAN.start, KEYWORD_PAN.end, EASE);
   const push = progress(frame, KEYWORD_PUSH.start, KEYWORD_PUSH.end, Easing.bezier(0.4, 0, 0.85, 0.45));
@@ -441,7 +513,10 @@ const PromptScene: React.FC = () => {
                 ? <span>{TYPED.slice(0, charsShown)}</span>
                 : <span className="text-white/45" style={{ opacity: placeholder }}>Ask Pear to build something…</span>}
               {frame >= 98 && frame < KEYWORD_PAN.start && (
-                <span style={{ opacity: Math.sin(frame / 4) > 0 ? 1 : 0 }} className="inline-block w-[3px] h-10 bg-cyan-300 ml-1" />
+                <span className="inline-block w-[3px] h-10 bg-cyan-300 ml-1"
+                  style={waiting
+                    ? { animation: "filmCaret 1s steps(1) infinite" }
+                    : { opacity: Math.sin(frame / 4) > 0 ? 1 : 0 }} />
               )}
             </div>
 
@@ -471,15 +546,28 @@ const PromptScene: React.FC = () => {
               </div>
             </div>
 
-            <div className="absolute w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl" style={{
-              right: pad, bottom: pad + 4,
-              transform: `scale(${progress(frame, 70, 84, EASE_OUT)})`,
-              background: "linear-gradient(to top right, #2563eb, #22d3ee)",
-              boxShadow: "0 10px 30px rgba(59,130,246,0.4)",
-            }}>↑</div>
+            <GateButton gate="send" label="Send the prompt"
+              className="absolute w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl"
+              style={{
+                right: pad, bottom: pad + 4,
+                transform: `scale(${progress(frame, 70, 84, EASE_OUT)})`,
+                background: "linear-gradient(to top right, #2563eb, #22d3ee)",
+                boxShadow: "0 10px 30px rgba(59,130,246,0.4)",
+              }}>↑</GateButton>
           </div>
         </Fill>
       </Fill>
+
+      {waiting && (() => {
+        const x = 960 + PROMPT_BOX.w / 2 - PROMPT_BOX.pad - 28;
+        const y = PROMPT_BOX.cy + PROMPT_BOX.h / 2 - PROMPT_BOX.pad - 32;
+        return (
+          <>
+            <GateHalo x={x} y={y} size={88} color="rgba(103,232,249,0.85)" />
+            <GateCursor x={x} y={y} />
+          </>
+        );
+      })()}
     </Fill>
   );
 };
@@ -926,7 +1014,8 @@ const OutroScene: React.FC = () => {
           }}>From business problem to deployed AI.</p>
 
           <div className="mt-9 flex items-center gap-4">
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-sky-400/15 border border-sky-300/40 text-sky-50 text-2xl" style={{
+            <a href="mailto:thanchanok.thv@gmail.com"
+              className="flex items-center gap-3 px-6 py-3 rounded-full bg-sky-400/15 border border-sky-300/40 text-sky-50 text-2xl transition-colors hover:bg-sky-400/30 hover:border-sky-200/70" style={{
               opacity: emailIn, transform: `scale(${mix(emailIn, 0.9, 1)})`,
               boxShadow: `0 0 ${emailIn * 30}px rgba(56,189,248,0.35)`,
             }}>
@@ -935,10 +1024,11 @@ const OutroScene: React.FC = () => {
                 <path d="M3.5 6.5 L12 13 L20.5 6.5" />
               </svg>
               thanchanok.thv@gmail.com
-            </div>
-            <div className="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white/80 text-xl" style={{
+            </a>
+            <a href="https://www.instagram.com/mee.webdev" target="_blank" rel="noreferrer"
+              className="px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white/80 text-xl transition-colors hover:bg-white/20 hover:text-white" style={{
               opacity: linkIn, transform: `scale(${mix(linkIn, 0.9, 1)})`,
-            }}>@mee.webdev</div>
+            }}>@mee.webdev</a>
           </div>
         </Fill>
       )}
@@ -956,34 +1046,52 @@ const SCENE_COMPONENTS = {
 } as const;
 
 /** The film is laid out on a fixed 1920×1080 canvas, then scaled to cover. */
-export default function TeaserFilm({ frame }: { frame: number }) {
+export default function TeaserFilm({ frame, gate = null, onRelease }: {
+  frame: number;
+  gate?: GateKey | null;
+  onRelease?: () => void;
+}) {
+  const state = useMemo<GateState>(
+    () => ({ waiting: gate, release: onRelease ?? (() => {}) }),
+    [gate, onRelease],
+  );
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: "#040711" }}>
+      {/* Nothing in the film takes a click except the control it is waiting on,
+          which turns pointer events back on for itself. */}
       <div style={{
         position: "absolute", left: "50%", top: "50%", width: 1920, height: 1080,
         transform: "translate(-50%,-50%) scale(var(--film-scale,1))", transformOrigin: "center",
+        pointerEvents: "none",
       }}>
-        <FrameContext.Provider value={frame}>
-          {SCENES.map(({ key, from, length }) => {
-            if (frame < from || frame >= from + length) return null;
-            const Scene = SCENE_COMPONENTS[key];
-            return (
-              <FrameContext.Provider key={key} value={frame - from}>
-                <Scene />
-              </FrameContext.Provider>
-            );
-          })}
-        </FrameContext.Provider>
+        <GateContext.Provider value={state}>
+          <FrameContext.Provider value={frame}>
+            {SCENES.map(({ key, from, length }) => {
+              if (frame < from || frame >= from + length) return null;
+              const Scene = SCENE_COMPONENTS[key];
+              return (
+                <FrameContext.Provider key={key} value={frame - from}>
+                  <Scene />
+                </FrameContext.Provider>
+              );
+            })}
+          </FrameContext.Provider>
+        </GateContext.Provider>
       </div>
     </div>
   );
 }
 
-/** Drives the film clock: 30fps, looping, and only while it is on screen. */
+/**
+ * Drives the film clock: 30fps, looping, only while it is on screen — and only
+ * as far as the next gate. The transitions run themselves; the presses do not.
+ */
 export function useFilmClock(hostRef: React.RefObject<HTMLElement | null>, playing: boolean) {
   const [frame, setFrame] = useState(0);
+  const [gate, setGate] = useState<GateKey | null>(null);
   const started = useRef<number | null>(null);
   const offset = useRef(0);
+  const held = useRef<GateKey | null>(null);
   const visible = useRef(true);
 
   useEffect(() => {
@@ -1000,9 +1108,18 @@ export function useFilmClock(hostRef: React.RefObject<HTMLElement | null>, playi
     let lastRendered = -1;
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      if (!visible.current) { started.current = now - (offset.current / FPS) * 1000; return; }
+      // Held at a gate, or off screen: the clock rebases off the frame it stopped on.
+      if (held.current !== null || !visible.current) { started.current = null; return; }
       if (started.current === null) started.current = now - (offset.current / FPS) * 1000;
-      const f = Math.floor(((now - started.current) / 1000) * FPS) % DURATION;
+      let f = Math.floor(((now - started.current) / 1000) * FPS);
+      if (f >= DURATION) {
+        const laps = Math.floor(f / DURATION);
+        f -= laps * DURATION;
+        started.current += ((laps * DURATION) / FPS) * 1000;
+        offset.current = 0;
+      }
+      const next = GATES.find((g) => g.at > offset.current && g.at <= f);
+      if (next) { f = next.at; held.current = next.key; setGate(next.key); }
       offset.current = f;
       if (f !== lastRendered) { lastRendered = f; setFrame(f); }
     };
@@ -1010,8 +1127,21 @@ export function useFilmClock(hostRef: React.RefObject<HTMLElement | null>, playi
     return () => cancelAnimationFrame(raf);
   }, [playing]);
 
-  const restart = () => { started.current = null; offset.current = 0; setFrame(0); };
-  return { frame, restart };
+  const release = useCallback(() => {
+    held.current = null;
+    started.current = null;
+    setGate(null);
+  }, []);
+
+  const restart = () => {
+    held.current = null;
+    started.current = null;
+    offset.current = 0;
+    setGate(null);
+    setFrame(0);
+  };
+
+  return { frame, gate, release, restart };
 }
 
 export { DURATION };
