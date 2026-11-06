@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import s from "@/app/editorial.module.css";
 import TeaserFilm, { useFilmClock } from "@/components/teaser-film";
+import { POSTER } from "@/lib/film";
 
 /* Thin-stroke marks in the film's idiom; the label moves to aria-label. */
 const Icon = ({ d, fill = false }: { d: string; fill?: boolean }) => (
@@ -22,8 +23,8 @@ const REPLAY = "M19.5 12a7.5 7.5 0 1 1-2.4-5.5M19.6 4.6v4.2h-4.2";
  * thanchanok-portfolio-frames/src/PearTeaser.tsx — same frames, same easings,
  * now as DOM, so it stays crisp at any size and carries no 11MB download.
  *
- * It plays itself, loops, and stops while off screen. Reduced motion holds it
- * on the frame where the name is on screen instead of running it.
+ * It plays itself, loops, and stops while off screen. Paused, or under reduced
+ * motion, it holds on the outro's name card instead of a frame caught mid-move.
  */
 export default function TeaserHero() {
   const host = useRef<HTMLElement>(null);
@@ -60,8 +61,8 @@ export default function TeaserHero() {
   }, []);
 
   const playing = wanted && !reduced;
-  // A still that reads as the film rather than an empty stage.
-  const shown = reduced ? 470 : frame;
+  // Resuming picks up from the clock, not from the poster.
+  const shown = playing ? frame : POSTER;
 
   return (
     <section ref={host} className={s.teaser} id="teaser" data-scene="teaser" aria-label="Teaser">

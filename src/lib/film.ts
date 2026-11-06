@@ -392,6 +392,9 @@ export const AT = {
 
 export const DURATION = AT.outro + 200;
 
+/** The outro once every piece of it is in: the name, the slogan, both chips. */
+export const POSTER = AT.outro + 170;
+
 /** The scenes, with the overlaps that make one transition into the next. */
 export const SCENES = [
   { key: "hello", from: AT.hello, length: AT.prompt + 45 },

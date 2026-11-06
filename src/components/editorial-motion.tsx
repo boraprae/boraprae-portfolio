@@ -12,7 +12,6 @@ export default function EditorialMotion({ children, className }: { children: Rea
     if (!element) return;
     const scenes = [...element.querySelectorAll<HTMLElement>("[data-scene]")];
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const motionButton = element.querySelector<HTMLButtonElement>("[data-motion-toggle]");
     const cards = [...element.querySelectorAll<HTMLElement>("[data-process-card]")];
     const panels = [...element.querySelectorAll<HTMLElement>("[data-work-panel]")];
     const workButtons = [...element.querySelectorAll<HTMLButtonElement>("[data-work-jump]")];
@@ -20,7 +19,6 @@ export default function EditorialMotion({ children, className }: { children: Rea
     const intro = element.querySelector<HTMLElement>("[data-computer-intro]");
     let frame = 0;
     let navigation = 0;
-    let paused = false;
     let desktopWasInteractive = false;
     let motion = !preference.matches;
     element.dataset.motion = motion ? "on" : "off";
@@ -37,6 +35,9 @@ export default function EditorialMotion({ children, className }: { children: Rea
         const p = clamp(-box.top / Math.max(1, box.height - height));
         property(scene, "--p", p);
         switch (scene.dataset.scene) {
+          case "teaser":
+            element!.dataset.nav = box.bottom <= 1 ? "on" : "off";
+            break;
           case "hero":
             property(scene, "--hero-y", clamp(-box.top / height) * 55, "px");
             break;
@@ -174,13 +175,8 @@ export default function EditorialMotion({ children, className }: { children: Rea
       });
       const before = current?.getBoundingClientRect();
       const fraction = before ? clamp(-before.top / Math.max(1, before.height - window.innerHeight)) : 0;
-      motion = !paused && !preference.matches;
+      motion = !preference.matches;
       element!.dataset.motion = motion ? "on" : "off";
-      if (motionButton) {
-        motionButton.textContent = preference.matches ? "Reduced motion" : paused ? "Resume motion" : "Pause motion";
-        motionButton.setAttribute("aria-pressed", String(!motion));
-        motionButton.disabled = preference.matches;
-      }
       if (current && before && before.top < 0) {
         const after = current.getBoundingClientRect();
         window.scrollTo({ top: window.scrollY + after.top + fraction * Math.max(0, after.height - window.innerHeight), behavior: "instant" });
@@ -190,7 +186,6 @@ export default function EditorialMotion({ children, className }: { children: Rea
     function click(event: MouseEvent) {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target as Element;
-      if (target.closest("[data-motion-toggle]")) { paused = !paused; changeMotion(); return; }
       const workButton = target.closest<HTMLElement>("[data-work-jump]");
       const jump = target.closest<HTMLElement>("[data-desktop-jump]");
       if (workButton || jump) {
@@ -255,6 +250,7 @@ export default function EditorialMotion({ children, className }: { children: Rea
       preference.removeEventListener("change", changeMotion);
       element.removeEventListener("click", click);
       delete element.dataset.motion;
+      delete element.dataset.nav;
       [...cards, ...panels].forEach(node => { node.inert = false; node.removeAttribute("aria-hidden"); });
       if (desktop) {
         desktop.inert = false; desktop.removeAttribute("aria-hidden");

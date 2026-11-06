@@ -28,7 +28,6 @@ export default function Home() {
     <a href="#intro" className={s.skip}>Skip to content</a>
     <header className={s.fixedNav}>
       <nav aria-label="Main navigation"><a href="#teaser">Teaser</a><a href="#process">Process</a><a href="#work">Portfolio</a><a href="#desktop">Toolkit</a><a href="#contact">Say hello</a></nav>
-      <button data-motion-toggle aria-pressed="false" className={s.motionToggle}>Pause motion</button>
     </header>
     <TeaserHero />
     <section className={s.hero} id="intro" data-scene="hero">
