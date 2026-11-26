@@ -89,7 +89,7 @@ export default function Home() {
       <div className={s.computerStage}>
         <div className={s.focusScene} data-focus-scene><FocusPresentation/></div>
         <div className={s.computerIntro} data-computer-intro><span className={s.micro}>A FEW THINGS BEHIND THE SCREEN</span><h2>Come a little<br/><em>closer.</em></h2><span>KEEP SCROLLING ↓</span><button className={s.desktopShortcut} data-desktop-jump>Or open my desktop ↗</button></div>
-        <div className={s.monitorWrap}><Image src="/images/editorial/crt-sage.png" alt="Sage green retro computer displaying a peaceful landscape" width={1280} height={1280}/></div>
+        <div className={s.monitorWrap}><Image src="/images/editorial/crt-black.png" alt="Black retro computer displaying a peaceful landscape" width={1280} height={1280}/></div>
         <div className={s.desktopReveal}><PortfolioDesktop/></div>
         <div className={s.computerProgress} aria-hidden="true"><span/></div>
       </div>

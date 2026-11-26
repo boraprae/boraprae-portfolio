@@ -71,7 +71,8 @@
 .fixedNav { position: fixed; top: 0; left: 0; width: 100%; height: 58px; padding: 0 20px; display: flex; align-items: center; justify-content: center; z-index: 50; background: transparent; pointer-events: none; text-shadow: 0 1px 14px rgba(4,7,17,.95), 0 0 3px rgba(4,7,17,.8); transition: opacity .35s, visibility 0s; }
 /* The teaser is the whole screen; the menu waits until it has scrolled away. */
 .page:not([data-nav="on"]) .fixedNav { opacity: 0; visibility: hidden; transition: opacity .35s, visibility 0s .35s; }
-.fixedNav nav { display: flex; gap: 13px; font-size: 14px; pointer-events: auto; }
+/* The menu floats over every scene, so it carries its own glass instead of landing on copy. */
+.fixedNav nav { display: flex; gap: 13px; font-size: 14px; pointer-events: auto; padding: 8px 18px; border: 1px solid var(--line); border-radius: 999px; background: var(--scrim); backdrop-filter: blur(16px); }
 .fixedNav a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .hero { height: 100svh; position: relative; display: flex; flex-direction: column; justify-content: center; padding: 86px 20px 70px; }
 .bigBrand { width: 100%; }
@@ -260,9 +261,12 @@
 .page[data-motion="on"] .workPanels { position: relative; height: calc(72svh - 85px); min-height: 330px; }
 .page[data-motion="on"] .workPanel { position: absolute; inset: 0; margin: 0; aspect-ratio: auto; min-height: 0; transform: translateY(var(--panel-y,0%)) rotate(var(--panel-r,0deg)) scale(var(--panel-scale,1)); transform-origin: center bottom; }
 .page[data-motion="on"] .computerTrack { height: 640svh; }
-.page[data-motion="on"] .computerStage { position: sticky; top: 0; height: 100svh; min-height: 0; }
-.page[data-motion="on"] .computerIntro { position: absolute; top: 8%; left: 0; right: 0; padding: 0; opacity: var(--intro-opacity,1); transform: translateY(var(--intro-y,0px)); }
-.page[data-motion="on"] .monitorWrap { position: absolute; top: 33%; left: 50%; width: min(62vw,62svh); margin: 0; transform: translate(-50%, var(--monitor-y,0px)) scale(var(--monitor-scale,1)); transform-origin: 50% 43%; opacity: var(--monitor-opacity,1); }
+/* Intro and monitor stack in one column: the monitor gets only the height the copy
+   leaves, so on a short screen it shrinks instead of sliding under the button. */
+.page[data-motion="on"] .computerStage { position: sticky; top: 0; height: 100svh; min-height: 0; display: flex; flex-direction: column; align-items: center; padding: 8svh 0 3svh; }
+.page[data-motion="on"] .computerIntro { align-self: stretch; padding: 0; opacity: var(--intro-opacity,1); transform: translateY(var(--intro-y,0px)); }
+.page[data-motion="on"] .monitorWrap { position: relative; flex: 1 1 0; min-height: 0; width: 100%; max-width: min(62vw,62svh); margin: 1svh 0 0; display: flex; justify-content: center; align-items: flex-start; opacity: var(--monitor-opacity,1); }
+.page[data-motion="on"] .monitorWrap img { width: auto; max-width: 100%; max-height: 100%; transform: translateY(var(--monitor-y,0px)) scale(var(--monitor-scale,1)); transform-origin: 50% 43%; }
 .page[data-motion="on"] .desktopReveal { position: absolute; inset: 0; height: 100%; min-height: 0; opacity: var(--desktop-opacity,0); transform: scale(var(--desktop-scale,.9)); }
 .page[data-motion="on"] .windowEntrance { transform: translateY(var(--window-y,120px)); opacity: var(--window-opacity,0); }
 .page[data-motion="on"] [data-scene="reveal"]>h2 { transform: translateY(var(--reveal-y,0px)); }
@@ -286,7 +290,7 @@
 }
 @media(max-width:750px) {
   .fixedNav { height: 50px; padding: 0 12px; }
-  .fixedNav nav { gap: 11px; font-size: 10px; }
+  .fixedNav nav { gap: 11px; font-size: 10px; padding: 7px 14px; }
   .hero { padding: 66px 12px 40px; height: 100svh; }
   .heroByline { font-size: 10px; margin-top: 10px; }
   .hero h1 { margin-top: clamp(24px,5svh,60px); margin-left: 25%; width: 75%; font-size: clamp(26px,5.4vw,40px); }
@@ -393,8 +397,7 @@
   .page[data-motion="on"] .workHeading { height: 18svh; margin-bottom: 15px; }
   .page[data-motion="on"] .workPanels { height: 55svh; min-height: 0; }
   .page[data-motion="on"] .computerTrack { height: 600svh; }
-  .page[data-motion="on"] .monitorWrap { top: 37%; width: 95vw; }
-  .page[data-motion="on"] .computerIntro { top: 15%; }
+  .page[data-motion="on"] .monitorWrap { max-width: 95vw; }
 }
 @media(prefers-reduced-motion:reduce) {
   .page *, .page *::before, .page *::after { animation: none !important; transition: none !important; }
@@ -412,8 +415,7 @@
 .computerIntro h2 { font-size: clamp(50px,5vw,80px); margin: 20px 0; }
 
 @media(max-width:750px) {
-  .page[data-motion="on"] .computerIntro { top: 12%; }
-  .page[data-motion="on"] .monitorWrap { top: 40%; }
+  .page[data-motion="on"] .computerStage { padding-top: 12svh; }
 }
 
 /* The focus statement, flipping tickets and desktop window share one canvas. */

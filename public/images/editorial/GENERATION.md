@@ -2,7 +2,17 @@
 
 Created with the built-in image generation tool for this portfolio. These are fictional visual studies, not photographs of the portfolio owner or evidence of client work.
 
-## crt-sage.png
+## crt-black.png
+
+Not generated: a recolour of `crt-sage.png` (prompt below; the sage PNG is kept beside it as the source and is no longer referenced by the site) for the dark PearTeaser palette. Only the casing changes; the screen's landscape is the source's pixels untouched, and geometry and alpha are the same, so the scroll zoom still lands on the screen. The casing is a luminance gradient map starting at near-black `#010207`:
+
+- Shell — `#06080e` → `#151925` → `#202534`, highlights to `#c9cfdc`.
+- Bezel (the cream ring, flood-filled between the shell and the screen's dark rim) — `#0a0d15` → `#1e2331` → `#4a5268`.
+- Screen (everything the ring encloses, pulled 3px into the rim) — unchanged.
+
+The matte's alpha-1 specks around the object are cleared and the body's alpha 253 is raised to 255.
+
+Source prompt for `crt-sage.png`:
 
 Use case: product-mockup. Asset type: premium web portfolio scroll-animation hero asset. Create a photorealistic sculptural vintage late-1990s CRT desktop computer, full complete monitor with pedestal base, front-on centered symmetrical view, camera exactly perpendicular to screen. Sage green matte plastic shell (#8d9c75), soft cream details (#fcfbf6), warm neutral studio lighting, subtle tactile plastic. Screen displays a beautiful photographic landscape of grassy olive-green rolling hills under a pale ivory sky, no text, no UI. The screen is large and occupies most of the monitor face. Isolated single object with genuinely transparent background, no desk, no keyboard, no other props. Entire object visible with generous margin on all sides. High-end 3D product render, realistic materials, soft self shadows, nostalgic yet sophisticated. No logos, no branding, no watermark. Square composition.
 
