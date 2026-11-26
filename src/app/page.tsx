@@ -41,11 +41,11 @@ export default function Home() {
       <div className={s.reelSticky}>
         <div className={s.reelFrame}>
           <div className={s.reelWorld}>
-            <div className={s.reelPhoto}><Image src="/images/editorial/studio-editorial.png" alt="A generated studio study of a woman working with her laptop" fill sizes="(max-width: 750px) 90vw, 70vw" priority/></div>
+            <div className={s.reelPhoto}><Image src="/images/editorial/studio-aurora.jpg" alt="A generated night studio study of a woman writing code at two monitors" fill sizes="(max-width: 750px) 90vw, 70vw" priority/></div>
             <div className={s.reelUI}><StudyInterface small/></div>
             <div className={s.reelType}><span>THOUGHTFULLY MADE.</span><p>A little<br/><em>human.</em></p><Star/></div>
             <div className={s.reelCode}><span>hello.tsx</span><pre>{'const curiosity = Infinity;\n\nfunction create(idea) {\n  return care + code;\n}'}</pre><span>IDEAS → INTERFACES</span></div>
-            <div className={s.reelWallpaper}><Image src="/images/editorial/meadow-wallpaper.png" alt="" fill sizes="35vw"/><span>A LITTLE ROOM TO THINK.</span></div>
+            <div className={s.reelWallpaper}><Image src="/images/editorial/aurora-wallpaper.jpg" alt="" fill sizes="35vw"/><span>A LITTLE ROOM TO THINK.</span></div>
             <div className={s.reelStamp}><Star/><span>CRAFTED WITH CURIOSITY</span></div>
           </div>
           <div className={s.reelCaption}><span>YAINEZU / SELECTED EXPLORATIONS</span><span>CODE. CRAFT. CURIOSITY.</span></div>
@@ -56,7 +56,7 @@ export default function Home() {
     <section className={s.about} id="about" data-scene="reveal">
       <div className={s.equation}><span>DESIGN</span><span>+</span><span>ENGINEERING</span><span>+</span><span>CURIOSITY</span><span>=</span><span>FULL CIRCLE</span></div>
       <h2>Good software is more<br/>than what’s on a screen.<br/><em>It’s the small things<br/>that make it feel human.</em></h2>
-      <div className={s.aboutPhoto}><Image src="/images/editorial/studio-editorial.png" alt="A warm studio, imagined in our cozy palette" width={900} height={506}/><span className={s.micro}>AN IMAGINED STUDIO / GENERATED ARTWORK</span></div>
+      <div className={s.aboutPhoto}><Image src="/images/editorial/studio-aurora.jpg" alt="A quiet night studio lit by monitors and a cyan aurora" width={900} height={506}/><span className={s.micro}>AN IMAGINED STUDIO / GENERATED ARTWORK</span></div>
       <p className={s.aboutCopy}>{profile.introduction}<br/><em>A curious mind → a thoughtful interface.</em></p>
       <h2 className={s.aboutSecond}>First, a little curiosity.<br/>Then, a little code.<br/><em>And a lot of care<br/>along the way.</em></h2>
     </section>
@@ -78,9 +78,9 @@ export default function Home() {
           {[['A little world','Next.js, React, Three.js'],['Little things','Interface concept'],['Somewhere quiet','Visual exploration']].map(([name,type],i)=><button key={name} data-work-jump={i} aria-current={i===0?"true":undefined}><span>0{i+1}.</span><span>{name}<small>{type}</small></span><span>↗</span></button>)}
           <span className={s.workHint}>SCROLL TO TURN THE PAGE ↓</span>
         </div><div className={s.workPanels}>
-          <article className={`${s.workPanel} ${s.studioProject}`} data-work-panel><Image src="/images/editorial/studio-editorial.png" alt="Warm studio artwork for the interactive workspace portfolio" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.projectOverlay}><span className={s.micro}>01 / PERSONAL PORTFOLIO</span><h3>A little world<br/><em>of my own.</em></h3><a href="/studio" className={s.circleLink}>EXPLORE<br/>THE STUDIO<br/><b>↗</b></a></div></article>
+          <article className={`${s.workPanel} ${s.studioProject}`} data-work-panel><Image src="/images/editorial/studio-aurora.jpg" alt="Night studio artwork for the interactive workspace portfolio" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.projectOverlay}><span className={s.micro}>01 / PERSONAL PORTFOLIO</span><h3>A little world<br/><em>of my own.</em></h3><a href="/studio" className={s.circleLink}>EXPLORE<br/>THE STUDIO<br/><b>↗</b></a></div></article>
           <article className={`${s.workPanel} ${s.interfaceProject}`} data-work-panel><StudyInterface/><span className={s.conceptLabel}>02 / INTERFACE STUDY — A PERSONAL DESIGN EXPLORATION</span></article>
-          <article className={`${s.workPanel} ${s.landscapeProject}`} data-work-panel><Image src="/images/editorial/meadow-wallpaper.png" alt="A generated landscape study of sage green hills" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.landscapeTitle}><span className={s.micro}>03 / VISUAL EXPLORATION</span><h3>Somewhere<br/><em>quiet.</em></h3><span>A LITTLE SPACE TO THINK.</span></div></article>
+          <article className={`${s.workPanel} ${s.landscapeProject}`} data-work-panel><Image src="/images/editorial/aurora-wallpaper.jpg" alt="A generated night landscape of dark hills under a cyan aurora" fill sizes="(max-width: 750px) 95vw, 70vw"/><div className={s.landscapeTitle}><span className={s.micro}>03 / VISUAL EXPLORATION</span><h3>Somewhere<br/><em>quiet.</em></h3><span>A LITTLE SPACE TO THINK.</span></div></article>
         </div></div>
       </div>
     </section>
@@ -89,7 +89,7 @@ export default function Home() {
       <div className={s.computerStage}>
         <div className={s.focusScene} data-focus-scene><FocusPresentation/></div>
         <div className={s.computerIntro} data-computer-intro><span className={s.micro}>A FEW THINGS BEHIND THE SCREEN</span><h2>Come a little<br/><em>closer.</em></h2><span>KEEP SCROLLING ↓</span><button className={s.desktopShortcut} data-desktop-jump>Or open my desktop ↗</button></div>
-        <div className={s.monitorWrap}><Image src="/images/editorial/crt-black.png" alt="Black retro computer displaying a peaceful landscape" width={1280} height={1280}/></div>
+        <div className={s.monitorWrap}><Image src="/images/editorial/crt-aurora.png" alt="Black retro computer displaying a quiet aurora landscape" width={1280} height={1280}/></div>
         <div className={s.desktopReveal}><PortfolioDesktop/></div>
         <div className={s.computerProgress} aria-hidden="true"><span/></div>
       </div>

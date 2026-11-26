@@ -88,7 +88,7 @@
 .reelFrame { width: 100%; height: 100%; overflow: hidden; position: relative; border-radius: 24px; background: var(--bg-deep); color: var(--ink); box-shadow: var(--halo); }
 .reelWorld { position: absolute; inset: 0; }
 .reelPhoto { position: absolute; left: 17%; top: 9%; width: 67%; height: 74%; overflow: hidden; border-radius: 18px; }
-.reelPhoto img { object-fit: cover; }
+.reelPhoto img { object-fit: cover; object-position: 80% 50%; } /* studio-aurora: subject sits right of centre */
 .reelUI { position: absolute; width: 40%; left: -4%; top: 49%; transform: rotate(-5deg); box-shadow: 0 20px 50px #0004; }
 .reelType { position: absolute; width: 29%; right: -2%; top: 11%; padding: 35px; border-radius: 20px; border: 1px solid var(--line-2); background: var(--glass-2); backdrop-filter: blur(14px); color: var(--ink); transform: rotate(4deg); }
 .reelType>span { font: 9px var(--font-mono); }
@@ -144,6 +144,7 @@
 .workPanels { min-width: 0; }
 .workPanel { position: relative; aspect-ratio: 1.8; min-height: 350px; overflow: hidden; border-radius: 22px; border: 1px solid var(--line); margin-bottom: 30px; background: var(--glass); box-shadow: var(--halo); }
 .workPanel>img { object-fit: cover; }
+.studioProject>img { object-position: 80% 50%; }
 .projectOverlay { position: absolute; inset: 0; padding: 30px; color: var(--ink); background: linear-gradient(90deg,rgba(4,7,17,.9), rgba(4,7,17,.35) 55%, transparent 80%); }
 .projectOverlay h3 { font-size: clamp(35px, 4.6vw, 75px); margin-top: 30px; }
 .circleLink { display: grid; place-content: center; text-align: center; width: 110px; height: 110px; border-radius: 50%; background: var(--glass-2); border: 1px solid var(--line-3); backdrop-filter: blur(14px); color: var(--ink) !important; position: absolute; right: 25px; bottom: 25px; font: 10px/1.5 var(--font-mono); transform: rotate(10deg); }

@@ -48,7 +48,7 @@ export default function PortfolioDesktop() {
   }
 
   return <div className={s.desktopOS} data-desktop-content data-open-window={open || "none"} data-expanded={expanded}>
-    <Image className={s.wallpaper} src="/images/editorial/meadow-wallpaper.png" alt="" fill sizes="100vw" />
+    <Image className={s.wallpaper} src="/images/editorial/aurora-wallpaper.jpg" alt="" fill sizes="100vw" />
     <div className={s.desktopMessage}>A curious mind.<br/><em>A few open windows.</em></div>
     <div className={s.desktopFiles} aria-label="Desktop files" data-desktop-controls>
       {files.map((file, index) => <button key={file.id} ref={node => { fileRefs.current[index] = node; }} onClick={() => show(file.id)} aria-pressed={open === file.id}><span className={s.fileIcon}>{file.icon}</span>{file.label}</button>)}
@@ -62,9 +62,9 @@ export default function PortfolioDesktop() {
         </div>
         <div className={s.windowBody}>
           {open === "toolkit" && <FocusPresentation/>}
-          {open === "about" && <div className={s.aboutWindow}><Image src="/images/editorial/studio-editorial.png" alt="Generated illustration of a woman coding in a warm studio" width={900} height={506}/><span className={s.micro}>A STUDIO STUDY / GENERATED ARTWORK</span><h3>Hello, I’m {profile.name}.</h3><p>{profile.introduction}</p><a href="/studio">Visit my interactive workspace ↗</a></div>}
+          {open === "about" && <div className={s.aboutWindow}><Image src="/images/editorial/studio-aurora.jpg" alt="Generated illustration of a woman coding in a night studio" width={900} height={506}/><span className={s.micro}>A STUDIO STUDY / GENERATED ARTWORK</span><h3>Hello, I’m {profile.name}.</h3><p>{profile.introduction}</p><a href="/studio">Visit my interactive workspace ↗</a></div>}
           {open === "notes" && <div className={s.notesWindow}><span className={s.micro}>PERSONAL NOTES / ALWAYS IN PROGRESS</span><h3>Behind the code.</h3><details open><summary>01 — What I’m drawn to</summary><p>The place where engineering meets visual storytelling. Useful, clear interfaces with a little personality.</p></details><details><summary>02 — What is this website made of?</summary><p>Next.js, TypeScript, native scroll-driven animation, and a Three.js studio. The artwork is a visual exploration created for this portfolio.</p></details><details><summary>03 — A little beyond the screen</summary><p>Pixel art, retro design, and small things that spark a new idea.</p></details></div>}
-          {open === "wallpaper" && <div className={s.wallpaperWindow}><Image src="/images/editorial/meadow-wallpaper.png" alt="Soft sage hills under a warm ivory sky" width={1440} height={810}/><p>Somewhere quiet. A generated landscape study in our cozy palette.</p></div>}
+          {open === "wallpaper" && <div className={s.wallpaperWindow}><Image src="/images/editorial/aurora-wallpaper.jpg" alt="Dark hills and a still lake under a cyan aurora" width={1440} height={810}/><p>Somewhere quiet. A generated night landscape under the aurora.</p></div>}
         </div>
       </section>}
     </div>
